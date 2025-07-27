@@ -1,4 +1,4 @@
-package net.3gxk.haloaicoverimage;
+package io.github.curtion.haloaicoverimage;
 
 import org.springframework.stereotype.Component;
 import run.halo.app.plugin.BasePlugin;

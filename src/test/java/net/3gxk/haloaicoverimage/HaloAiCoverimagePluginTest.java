@@ -1,4 +1,4 @@
-package net.3gxk.haloaicoverimage;
+package io.github.curtion.haloaicoverimage;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
