@@ -15,8 +15,8 @@ spec:
   homepage: https://github.com/Curtion/halo-ai-coverimage#readme
   repo: https://github.com/Curtion/halo-ai-coverimage
   issues: https://github.com/Curtion/halo-ai-coverimage/issues
-  displayName: "halo-ai-coverimage"
-  description: "halo-ai-coverimage - Halo 插件"
+  displayName: "AI封面图"
+  description: "利用AI生成文章封面图, 支持多种AI服务。"
   license:
     - name: "GPL-3.0"
       url: "https://github.com/Curtion/halo-ai-coverimage/blob/main/LICENSE"
