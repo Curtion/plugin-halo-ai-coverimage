@@ -7,17 +7,16 @@ export default definePlugin({
   components: {},
   routes: [
     {
-      parentName: 'Root',
+      parentName: 'ToolsRoot',
       route: {
-        path: '/example',
-        name: 'Example',
+        path: '/ai-coverimage',
+        name: 'ai-coverimage',
         component: HomeView,
         meta: {
-          title: '示例页面',
+          title: 'AI封面图',
           searchable: true,
           menu: {
-            name: '示例页面',
-            group: '示例分组',
+            name: 'AI封面图',
             icon: markRaw(IconPlug),
             priority: 0,
           },
