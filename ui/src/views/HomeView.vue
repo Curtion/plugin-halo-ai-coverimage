@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { VPageHeader, VCard, VTabbar } from "@halo-dev/components";
-import { ref } from "vue";
-import IconWrench from "~icons/iconoir/wrench";
+import { VCard, VPageHeader, VTabbar } from '@halo-dev/components'
+import { ref } from 'vue'
+import IconWrench from '~icons/iconoir/wrench'
 
 const tabs = [
   { id: 'tab1', label: 'Tab 1' },
   { id: 'tab2', label: 'Tab 2' },
-];
-const activeTab = ref(tabs[0].id);
+]
+const activeTab = ref(tabs[0].id)
 
-function handleTabChange(newTabId: string|number) {
-  console.log('Active tab changed to:', newTabId);
-  activeTab.value = String(newTabId);
+function handleTabChange(newTabId: string | number) {
+  console.log('Active tab changed to:', newTabId)
+  activeTab.value = String(newTabId)
 }
 </script>
 
@@ -24,8 +24,13 @@ function handleTabChange(newTabId: string|number) {
   <div class="m-0 md:m-4">
     <VCard>
       <template #header>
-        <VTabbar v-model:active-id="activeTab" :items="tabs.map((item) => ({ id: item.id, label: item.label }))"
-          class="w-full !rounded-none" type="outline" @change="handleTabChange"></VTabbar>
+        <VTabbar
+          v-model:active-id="activeTab"
+          :items="tabs.map((item) => ({ id: item.id, label: item.label }))"
+          class="w-full !rounded-none"
+          type="outline"
+          @change="handleTabChange"
+        />
       </template>
       <div class="rounded-b-base bg-white">
         123

@@ -1,7 +1,7 @@
 import { definePlugin } from '@halo-dev/console-shared'
-import HomeView from './views/HomeView.vue'
-import { IconPlug } from '@halo-dev/components'
 import { markRaw } from 'vue'
+import IconWrench from '~icons/iconoir/wrench'
+import HomeView from './views/HomeView.vue'
 
 export default definePlugin({
   components: {},
@@ -17,7 +17,7 @@ export default definePlugin({
           searchable: true,
           menu: {
             name: 'AI封面图',
-            icon: markRaw(IconPlug),
+            icon: markRaw(IconWrench),
             priority: 0,
           },
         },

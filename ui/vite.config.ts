@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from 'url'
+import { fileURLToPath, URL } from 'node:url'
 
 import { viteConfig } from '@halo-dev/ui-plugin-bundler-kit'
 import Icons from 'unplugin-icons/vite'
