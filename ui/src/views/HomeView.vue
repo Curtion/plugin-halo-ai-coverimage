@@ -3,6 +3,7 @@ import { VCard, VPageHeader, VTabbar } from '@halo-dev/components'
 import { ref } from 'vue'
 import IconWrench from '~icons/iconoir/wrench'
 import Quick from '@/components/Quick.vue'
+import Settings from '@/components/Settings.vue'
 
 const tabs = [
   { id: 'quick', label: '一键生成' },
@@ -34,6 +35,7 @@ function handleTabChange(newTabId: string | number) {
       </template>
       <div class="bg-white">
         <Quick v-if="activeTab === 'quick'" />
+        <Settings v-if="activeTab === 'setting'" />
       </div>
     </VCard>
   </div>
