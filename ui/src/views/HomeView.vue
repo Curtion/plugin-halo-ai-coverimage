@@ -2,16 +2,16 @@
 import { VCard, VPageHeader, VTabbar } from '@halo-dev/components'
 import { ref } from 'vue'
 import IconWrench from '~icons/iconoir/wrench'
+import Quick from '@/components/Quick.vue'
 
 const tabs = [
-  { id: 'tab1', label: 'Tab 1' },
-  { id: 'tab2', label: 'Tab 2' },
-]
-const activeTab = ref(tabs[0].id)
+  { id: 'quick', label: '一键生成' },
+  { id: 'setting', label: '设置' },
+] as const
+const activeTab = ref<'quick' | 'setting'>(tabs[0].id)
 
 function handleTabChange(newTabId: string | number) {
-  console.log('Active tab changed to:', newTabId)
-  activeTab.value = String(newTabId)
+  activeTab.value = String(newTabId) as 'quick' | 'setting'
 }
 </script>
 
@@ -32,8 +32,8 @@ function handleTabChange(newTabId: string | number) {
           @change="handleTabChange"
         />
       </template>
-      <div class="rounded-b-base bg-white">
-        123
+      <div class="bg-white">
+        <Quick v-if="activeTab === 'quick'" />
       </div>
     </VCard>
   </div>
