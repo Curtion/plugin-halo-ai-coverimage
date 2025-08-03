@@ -18,9 +18,9 @@ function handleSubmit() {
   <VAlert title="注意事项" type="info" :closable="false">
     <template #description>
       <ul class="ml-2 list-disc list-inside space-y-1">
-        <li>操作前请先配置API相关参数。</li>
+        <li>操作前请先进行插件设置。</li>
         <li>该功能会覆盖文章原始封面, 操作前建议备份。</li>
-        <li>一键生成会为所选的文章范围自动生成封面图。</li>
+        <li>启用插件后, 发布文章时将自动生成封面图。</li>
       </ul>
     </template>
   </VAlert>
