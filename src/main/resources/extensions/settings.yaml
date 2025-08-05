@@ -4,6 +4,18 @@ metadata:
   name: plugin-aicoverimage-settings
 spec:
   forms:
+    - group: pluginActivation
+      label: 基础设置
+      formSchema:
+      - $formkit: select
+        name: pluginStatus
+        label: 是否启用
+        value: disabled
+        options:
+          - label: 启用
+            value: enabled
+          - label: 禁用
+            value: disabled
     - group: llmProvider
       label: LLM提供商设置
       formSchema:
@@ -13,21 +25,21 @@ spec:
           options:
             - label: 硅基流动
               value: siliconflow
-          value: 'siliconflow'
+          value: "siliconflow"
         - $formkit: text
           name: model
           label: 模型
-          placeholder: '请输入模型ID'
-          value: 'Qwen/Qwen3-235B-A22B-Instruct-2507'
+          placeholder: "请输入模型ID"
+          value: "Qwen/Qwen3-235B-A22B-Instruct-2507"
         - $formkit: text
           name: apiKey
           label: API Key
-          placeholder: '请输入你的 API Key'
+          placeholder: "请输入你的 API Key"
           validation: required
         - $formkit: textarea
           name: prompt
           label: 提示词
-          placeholder: '请输入提示词'
+          placeholder: "请输入提示词"
           rows: 10
           value: |
             # 角色
@@ -66,14 +78,14 @@ spec:
           options:
             - label: 硅基流动
               value: siliconflow
-          value: 'siliconflow'
+          value: "siliconflow"
         - $formkit: text
           name: model
           label: 模型
-          placeholder: '请输入模型ID'
-          value: 'Kwai-Kolors/Kolors'
+          placeholder: "请输入模型ID"
+          value: "Kwai-Kolors/Kolors"
         - $formkit: text
           name: apiKey
           label: API Key
-          placeholder: '请输入你的 API Key'
+          placeholder: "请输入你的 API Key"
           validation: required
