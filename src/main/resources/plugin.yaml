@@ -12,11 +12,13 @@ spec:
     name: Curtion
     website: https://github.com/Curtion
   logo: logo.png
+  settingName: plugin-aicoverimage-settings
+  configMapName: plugin-aicoverimage-configMap
   homepage: https://github.com/Curtion/halo-ai-coverimage#readme
   repo: https://github.com/Curtion/halo-ai-coverimage
   issues: https://github.com/Curtion/halo-ai-coverimage/issues
   displayName: "AI封面图"
-  description: "利用AI生成文章封面图, 支持多种AI服务。"
+  description: "利用AI生成文章封面图。"
   license:
     - name: "GPL-3.0"
       url: "https://github.com/Curtion/halo-ai-coverimage/blob/main/LICENSE"

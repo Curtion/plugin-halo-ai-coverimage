@@ -21,12 +21,16 @@ import run.halo.app.plugin.PluginContext;
 @Component
 public class HaloAiCoverimagePlugin extends BasePlugin {
 
+    // @Autowired
+    // private SchemeManager schemeManager;
+
     public HaloAiCoverimagePlugin(PluginContext pluginContext) {
         super(pluginContext);
     }
 
     @Override
     public void start() {
+        // schemeManager.register(Setting.class);
         System.out.println("插件启动成功！");
     }
 
