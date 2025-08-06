@@ -4,18 +4,6 @@ metadata:
   name: plugin-aicoverimage-settings
 spec:
   forms:
-    - group: pluginActivation
-      label: 基础设置
-      formSchema:
-      - $formkit: select
-        name: pluginStatus
-        label: 是否启用
-        value: disabled
-        options:
-          - label: 启用
-            value: enabled
-          - label: 禁用
-            value: disabled
     - group: llmProvider
       label: LLM提供商设置
       formSchema:
