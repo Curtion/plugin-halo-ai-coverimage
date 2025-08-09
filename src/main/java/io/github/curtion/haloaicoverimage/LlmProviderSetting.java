@@ -1,7 +1,7 @@
 package io.github.curtion.haloaicoverimage;
 
 public record LlmProviderSetting(
-        String engine,
+        ProviderEngine engine,
         String model,
         String apiKey,
         String prompt) {
