@@ -4,6 +4,9 @@ import io.github.curtion.haloaicoverimage.provider.LlmProvider;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
+import java.time.Duration;
+import org.springframework.dao.OptimisticLockingFailureException;
+import reactor.util.retry.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -52,10 +55,17 @@ public class HaloEventListener {
 
                                 return llmProvider.generatePrompt(post, llmSetting)
                                         .flatMap(prompt -> t2iProvider.generate(prompt, t2iSetting))
-                                        .flatMap(imageUrl -> {
-                                            post.getSpec().setCover(imageUrl);
-                                            return client.update(post);
-                                        });
+                                        .flatMap(imageUrl -> Mono.defer(() -> this.client.fetch(Post.class, post.getMetadata().getName())
+                                                        .flatMap(latestPost -> {
+                                                            latestPost.getSpec().setCover(imageUrl);
+                                                            return this.client.update(latestPost);
+                                                        }))
+                                                .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+                                                        .filter(throwable -> throwable instanceof OptimisticLockingFailureException)
+                                                        .doBeforeRetry(retrySignal -> log.warn(
+                                                                "Failed to update post cover due to conflict, retry attempt: {}",
+                                                                retrySignal.totalRetries() + 1)))
+                                        );
                             });
                 })
                 .then();
