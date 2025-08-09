@@ -5,7 +5,7 @@ import io.github.curtion.haloaicoverimage.provider.T2iProvider;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultT2iProvider implements T2iProvider {
+public class SfT2iProvider implements T2iProvider {
 
     @Override
     public String generate(String prompt, T2iProviderSetting setting) {

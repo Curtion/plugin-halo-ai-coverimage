@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.Post;
 
 @Component
-public class DefaultLlmProvider implements LlmProvider {
+public class SfLlmProvider implements LlmProvider {
 
     @Override
     public String generatePrompt(Post post, LlmProviderSetting setting) {
