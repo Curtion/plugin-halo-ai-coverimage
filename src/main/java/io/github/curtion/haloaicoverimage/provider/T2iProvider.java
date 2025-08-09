@@ -1,5 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider;
 
+import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import reactor.core.publisher.Mono;
 
@@ -7,6 +8,13 @@ import reactor.core.publisher.Mono;
  * Text to image provider.
  */
 public interface T2iProvider {
+
+    /**
+     * Returns the engine type of this provider.
+     *
+     * @return provider engine enum.
+     */
+    ProviderEngine getProviderEngine();
 
     /**
      * Generate image by prompt.

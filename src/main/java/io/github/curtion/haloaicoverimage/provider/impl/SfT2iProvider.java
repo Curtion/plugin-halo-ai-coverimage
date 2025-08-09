@@ -1,6 +1,7 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.net.URI;
@@ -17,6 +18,11 @@ public class SfT2iProvider implements T2iProvider {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public ProviderEngine getProviderEngine() {
+        return ProviderEngine.SILICONFLOW;
+    }
 
     @Override
     public Mono<String> generate(String prompt, T2iProviderSetting setting) {

@@ -1,6 +1,7 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.provider.LlmProvider;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import java.net.URI;
@@ -24,6 +25,11 @@ public class SfLlmProvider implements LlmProvider {
 
     public SfLlmProvider(PostContentService postContentService) {
         this.postContentService = postContentService;
+    }
+
+    @Override
+    public ProviderEngine getProviderEngine() {
+        return ProviderEngine.SILICONFLOW;
     }
 
     @Override

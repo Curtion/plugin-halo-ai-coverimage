@@ -1,5 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider;
 
+import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.content.Post;
@@ -8,6 +9,13 @@ import run.halo.app.core.extension.content.Post;
  * LLM provider extension point.
  */
 public interface LlmProvider {
+
+    /**
+     * Returns the engine type of this provider.
+     *
+     * @return provider engine enum.
+     */
+    ProviderEngine getProviderEngine();
 
     /**
      * Generate prompt by post.

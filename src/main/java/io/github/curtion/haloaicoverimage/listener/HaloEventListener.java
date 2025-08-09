@@ -1,7 +1,7 @@
 package io.github.curtion.haloaicoverimage.listener;
 
-import io.github.curtion.haloaicoverimage.provider.LlmProvider;
-import io.github.curtion.haloaicoverimage.provider.T2iProvider;
+import io.github.curtion.haloaicoverimage.provider.LlmProviderManager;
+import io.github.curtion.haloaicoverimage.provider.T2iProviderManager;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.time.Duration;
@@ -24,15 +24,15 @@ public class HaloEventListener {
 
     private final ReactiveExtensionClient client;
     private final ReactiveSettingFetcher settingFetcher;
-    private final LlmProvider llmProvider;
-    private final T2iProvider t2iProvider;
+    private final LlmProviderManager llmProviderManager;
+    private final T2iProviderManager t2iProviderManager;
 
     public HaloEventListener(ReactiveExtensionClient client, ReactiveSettingFetcher settingFetcher,
-            LlmProvider llmProvider, T2iProvider t2iProvider) {
+        LlmProviderManager llmProviderManager, T2iProviderManager t2iProviderManager) {
         this.client = client;
         this.settingFetcher = settingFetcher;
-        this.llmProvider = llmProvider;
-        this.t2iProvider = t2iProvider;
+        this.llmProviderManager = llmProviderManager;
+        this.t2iProviderManager = t2iProviderManager;
     }
 
     @EventListener
@@ -53,9 +53,26 @@ public class HaloEventListener {
                                     return Mono.empty();
                                 }
 
-                                return llmProvider.generatePrompt(post, llmSetting)
-                                        .flatMap(prompt -> t2iProvider.generate(prompt, t2iSetting))
-                                        .flatMap(imageUrl -> Mono.defer(() -> this.client.fetch(Post.class, post.getMetadata().getName())
+                                return llmProviderManager.getProvider(llmSetting.engine())
+                                   .map(provider -> provider.generatePrompt(post, llmSetting))
+                                   .orElseGet(() -> {
+                                       log.warn("No LLM provider found for engine: {}",
+                                           llmSetting.engine());
+                                       return Mono.empty();
+                                   })
+                                   .flatMap(prompt ->
+                                       t2iProviderManager.getProvider(t2iSetting.engine())
+                                           .map(t2iProvider -> t2iProvider.generate(prompt,
+                                               t2iSetting))
+                                           .orElseGet(() -> {
+                                               log.warn("No T2I provider found for engine: {}",
+                                                   t2iSetting.engine());
+                                               return Mono.empty();
+                                           })
+                                   )
+                                   .flatMap(imageUrl -> Mono.defer(
+                                       () -> this.client.fetch(Post.class,
+                                           post.getMetadata().getName())
                                                         .flatMap(latestPost -> {
                                                             latestPost.getSpec().setCover(imageUrl);
                                                             return this.client.update(latestPost);
