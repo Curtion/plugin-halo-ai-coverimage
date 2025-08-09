@@ -5,9 +5,6 @@ import run.halo.app.core.extension.content.Post;
 
 /**
  * LLM provider extension point.
- *
- * @author curtion
- * @date 2024/04/27
  */
 public interface LlmProvider {
 

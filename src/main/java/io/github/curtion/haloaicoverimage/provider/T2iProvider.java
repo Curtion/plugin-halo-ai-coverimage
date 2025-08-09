@@ -4,9 +4,6 @@ import io.github.curtion.haloaicoverimage.T2iProviderSetting;
 
 /**
  * Text to image provider.
- *
- * @author curtion
- * @date 2024/04/27
  */
 public interface T2iProvider {
 
