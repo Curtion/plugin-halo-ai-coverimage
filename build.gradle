@@ -13,14 +13,11 @@ repositories {
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:3.5.4")
     implementation platform('run.halo.tools.platform:plugin:2.21.0')
-    implementation platform("org.springframework.ai:spring-ai-bom:1.0.1")
     compileOnly 'run.halo.app:api'
 
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    implementation 'org.springframework.ai:spring-ai-openai'
 }
 
 test {
