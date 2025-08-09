@@ -50,11 +50,12 @@ public class HaloEventListener {
                                     return Mono.empty();
                                 }
 
-                                String prompt = llmProvider.generatePrompt(post, llmSetting);
-                                String imageUrl = t2iProvider.generate(prompt, t2iSetting);
-
-                                post.getSpec().setCover(imageUrl);
-                                return client.update(post);
+                                return llmProvider.generatePrompt(post, llmSetting)
+                                        .flatMap(prompt -> t2iProvider.generate(prompt, t2iSetting))
+                                        .flatMap(imageUrl -> {
+                                            post.getSpec().setCover(imageUrl);
+                                            return client.update(post);
+                                        });
                             });
                 })
                 .then();

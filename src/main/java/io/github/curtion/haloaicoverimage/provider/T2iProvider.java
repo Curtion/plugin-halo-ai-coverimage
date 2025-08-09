@@ -1,6 +1,7 @@
 package io.github.curtion.haloaicoverimage.provider;
 
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
+import reactor.core.publisher.Mono;
 
 /**
  * Text to image provider.
@@ -14,5 +15,5 @@ public interface T2iProvider {
      * @param setting setting must not be null
      * @return image url
      */
-    String generate(String prompt, T2iProviderSetting setting);
+    Mono<String> generate(String prompt, T2iProviderSetting setting);
 }

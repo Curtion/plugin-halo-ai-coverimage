@@ -1,6 +1,7 @@
 package io.github.curtion.haloaicoverimage.provider;
 
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
+import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.content.Post;
 
 /**
@@ -15,5 +16,5 @@ public interface LlmProvider {
      * @param setting setting must not be null
      * @return prompt
      */
-    String generatePrompt(Post post, LlmProviderSetting setting);
+    Mono<String> generatePrompt(Post post, LlmProviderSetting setting);
 }

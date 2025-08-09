@@ -27,7 +27,7 @@ public class SfLlmProvider implements LlmProvider {
     }
 
     @Override
-    public String generatePrompt(Post post, LlmProviderSetting setting) {
+    public Mono<String> generatePrompt(Post post, LlmProviderSetting setting) {
         String postName = post.getMetadata().getName();
         String title = post.getSpec().getTitle();
         List<String> tags = post.getSpec().getTags();
@@ -79,7 +79,6 @@ public class SfLlmProvider implements LlmProvider {
                 } catch (Exception e) {
                     return Mono.error(e);
                 }
-            })
-            .block();
+            });
     }
 }
