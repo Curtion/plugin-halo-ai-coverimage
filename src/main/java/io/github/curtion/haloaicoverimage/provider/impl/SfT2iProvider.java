@@ -1,19 +1,62 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
 public class SfT2iProvider implements T2iProvider {
 
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public Mono<String> generate(String prompt, T2iProviderSetting setting) {
-        // This is a dummy implementation.
-        // In a real-world application, you would call a text-to-image API
-        // with the given prompt and settings.
-        // For now, we'll just return a placeholder image URL.
-        return Mono.just("https://via.placeholder.com/1200x800.png?text=" + prompt.replace(" ", "+"));
+        try {
+            Map<String, Object> body = Map.of(
+                "model", setting.model(),
+                "prompt", prompt,
+                "image_size", "1024x1024",
+                "batch_size", 1,
+                "num_inference_steps", 20,
+                "guidance_scale", 7.5
+            );
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.siliconflow.cn/v1/images/generations"))
+                .header("Authorization", "Bearer " + setting.apiKey())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(
+                    objectMapper.writeValueAsString(body)))
+                .build();
+
+            return Mono.fromFuture(
+                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
+                .map(HttpResponse::body)
+                .flatMap(responseBody -> {
+                    try {
+                        Map<String, Object> responseMap =
+                            objectMapper.readValue(responseBody, Map.class);
+                        List<Map<String, Object>> images =
+                            (List<Map<String, Object>>) responseMap.get("images");
+                        if (images != null && !images.isEmpty()) {
+                            return Mono.just((String) images.get(0).get("url"));
+                        }
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                    return Mono.empty();
+                });
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
     }
 }
