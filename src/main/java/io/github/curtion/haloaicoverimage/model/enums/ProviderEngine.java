@@ -1,4 +1,4 @@
-package io.github.curtion.haloaicoverimage;
+package io.github.curtion.haloaicoverimage.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

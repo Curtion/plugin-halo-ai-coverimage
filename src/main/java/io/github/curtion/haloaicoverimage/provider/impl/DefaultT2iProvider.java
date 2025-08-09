@@ -1,6 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
-import io.github.curtion.haloaicoverimage.T2iProviderSetting;
+import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
 import org.springframework.stereotype.Component;
 

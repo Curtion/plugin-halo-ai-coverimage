@@ -1,4 +1,6 @@
-package io.github.curtion.haloaicoverimage;
+package io.github.curtion.haloaicoverimage.setting;
+
+import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 
 public record T2iProviderSetting(
         ProviderEngine engine,

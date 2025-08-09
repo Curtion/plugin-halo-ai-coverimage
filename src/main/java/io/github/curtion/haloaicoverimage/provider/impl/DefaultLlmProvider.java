@@ -1,6 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
-import io.github.curtion.haloaicoverimage.LlmProviderSetting;
+import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.provider.LlmProvider;
 import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.Post;

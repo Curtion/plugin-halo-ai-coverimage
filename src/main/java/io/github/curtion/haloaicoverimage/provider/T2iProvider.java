@@ -1,6 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider;
 
-import io.github.curtion.haloaicoverimage.T2iProviderSetting;
+import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 
 /**
  * Text to image provider.

@@ -1,7 +1,9 @@
-package io.github.curtion.haloaicoverimage;
+package io.github.curtion.haloaicoverimage.listener;
 
 import io.github.curtion.haloaicoverimage.provider.LlmProvider;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
+import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
+import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;

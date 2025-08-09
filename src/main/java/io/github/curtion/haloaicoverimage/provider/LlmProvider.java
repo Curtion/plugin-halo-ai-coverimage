@@ -1,6 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider;
 
-import io.github.curtion.haloaicoverimage.LlmProviderSetting;
+import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import run.halo.app.core.extension.content.Post;
 
 /**
