@@ -35,10 +35,8 @@ public class HaloEventListener {
         return this.client.fetch(Post.class, event.getName())
                 .filter(post -> post.getSpec().getCover() == null || post.getSpec().getCover().isEmpty())
                 .flatMap(post -> {
-                    var llmSettingsMono =
-                            settingFetcher.fetch(LlmProviderSetting.GROUP_NAME, LlmProviderSetting.class);
-                    var t2iSettingsMono =
-                            settingFetcher.fetch(T2iProviderSetting.GROUP_NAME, T2iProviderSetting.class);
+                    var llmSettingsMono = settingFetcher.fetch(LlmProviderSetting.GROUP_NAME, LlmProviderSetting.class);
+                    var t2iSettingsMono = settingFetcher.fetch(T2iProviderSetting.GROUP_NAME, T2iProviderSetting.class);
 
                     return Mono.zip(llmSettingsMono, t2iSettingsMono)
                             .flatMap(tuple -> {
