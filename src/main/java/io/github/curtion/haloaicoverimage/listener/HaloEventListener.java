@@ -6,7 +6,6 @@ import io.github.curtion.haloaicoverimage.provider.T2iProviderManager;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.time.Duration;
-import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -16,7 +15,6 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import run.halo.app.core.extension.content.Post;
 import run.halo.app.event.post.PostPublishedEvent;
-import run.halo.app.extension.Metadata;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.plugin.ReactiveSettingFetcher;
 
@@ -52,19 +50,16 @@ public class HaloEventListener {
                         var t2iSetting = tuple.getT2();
 
                         if (llmSetting == null || t2iSetting == null) {
-                            log.warn("LLM or T2I setting is not configured, skipping.");
+                            log.warn("LLM或T2I设置未配置, 跳过。");
                             return Mono.empty();
                         }
 
                         var record = new CoverGenerateRecord();
                         var spec = new CoverGenerateRecord.Spec();
                         record.setSpec(spec);
-                        record.setMetadata(new Metadata());
-                        record.getMetadata().setGenerateName("post-" + post.getMetadata().getName() + "-");
 
-                        spec.setEventTime(Instant.now());
-                        spec.setStatus("Processing");
-                        spec.setProvider(t2iSetting.engine().name());
+                        spec.setStatus(CoverGenerateRecord.Status.PROCESSING);
+                        spec.setProvider(t2iSetting.engine().getValue());
                         spec.setModelId(t2iSetting.model());
 
                         return this.client.create(record)
@@ -92,7 +87,7 @@ public class HaloEventListener {
                                 .flatMap(imageUrl -> this.client.fetch(CoverGenerateRecord.class,
                                             createdRecord.getMetadata().getName())
                                         .flatMap(latestRecord -> {
-                                            latestRecord.getSpec().setStatus("Success");
+                                            latestRecord.getSpec().setStatus(CoverGenerateRecord.Status.SUCCESS);
                                             return this.client.update(latestRecord);
                                         })
                                         .then(Mono.defer(() -> this.client.fetch(Post.class, post.getMetadata().getName())
@@ -110,7 +105,7 @@ public class HaloEventListener {
                                     log.error("Failed to generate cover image for post: {}", post.getMetadata().getName(), e);
                                     return this.client.fetch(CoverGenerateRecord.class, createdRecord.getMetadata().getName())
                                         .flatMap(latestRecord -> {
-                                            latestRecord.getSpec().setStatus("Failed");
+                                            latestRecord.getSpec().setStatus(CoverGenerateRecord.Status.FAILED);
                                             return this.client.update(latestRecord);
                                         })
                                         .then(Mono.empty());

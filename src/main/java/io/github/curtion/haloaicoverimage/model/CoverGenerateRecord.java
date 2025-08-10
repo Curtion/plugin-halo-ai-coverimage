@@ -7,16 +7,10 @@ import lombok.ToString;
 import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.GVK;
 
-import java.time.Instant;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@GVK(group = "io.github.curtion",
-        version = "v1alpha1",
-        kind = "CoverGenerateRecord",
-        plural = "covergeneraterecords",
-        singular = "covergeneraterecord")
+@GVK(group = "io.github.curtion", version = "v1alpha1", kind = "CoverGenerateRecord", plural = "covergeneraterecords", singular = "covergeneraterecord")
 public class CoverGenerateRecord extends AbstractExtension {
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -26,19 +20,22 @@ public class CoverGenerateRecord extends AbstractExtension {
     @Schema(name = "CoverGenerateRecordSpec")
     public static class Spec {
 
-        @Schema(description = "The time of the event")
-        private Instant eventTime;
+        @Schema(description = "处理状态")
+        private Status status;
 
-        @Schema(description = "The status of the process")
-        private String status;
-
-        @Schema(description = "The prompt used for image generation")
+        @Schema(description = "提示词")
         private String prompt;
 
-        @Schema(description = "The provider of the model")
+        @Schema(description = "服务提供商")
         private String provider;
 
-        @Schema(description = "The ID of the model")
+        @Schema(description = "模型")
         private String modelId;
+    }
+
+    public enum Status {
+        PROCESSING,
+        SUCCESS,
+        FAILED
     }
 }
