@@ -23,14 +23,23 @@ public class CoverGenerateRecord extends AbstractExtension {
         @Schema(description = "处理状态")
         private Status status;
 
-        @Schema(description = "提示词")
-        private String prompt;
+        @Schema(description = "LLM提示词")
+        private String llmPrompt;
 
-        @Schema(description = "服务提供商")
-        private String provider;
+        @Schema(description = "T2I提示词")
+        private String t2iPrompt;
 
-        @Schema(description = "模型")
-        private String modelId;
+        @Schema(description = "LLM服务提供商")
+        private String llmProvider;
+
+        @Schema(description = "T2I服务提供商")
+        private String t2iProvider;
+
+        @Schema(description = "LLM模型")
+        private String llmModelId;
+
+        @Schema(description = "T2I模型")
+        private String t2iModelId;
     }
 
     public enum Status {
