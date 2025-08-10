@@ -50,6 +50,5 @@ halo {
     version = '2.21'
     debug = true
     debugPort = 5005
-    suspend = true
 }
 

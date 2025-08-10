@@ -88,24 +88,24 @@ public class HaloEventListener {
                                                                             t2iSetting.engine());
                                                                     return Mono.empty();
                                                                 })))
-                                                .flatMap(imageUrl -> this.client.fetch(CoverGenerateRecord.class,
-                                                        createdRecord.getMetadata().getName())
+                                                .flatMap(imageUrl -> this.client
+                                                        .fetch(Post.class, post.getMetadata().getName())
+                                                        .flatMap(latestPost -> {
+                                                            latestPost.getSpec().setCover(imageUrl);
+                                                            return this.client.update(latestPost);
+                                                        })
+                                                        .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+                                                                .filter(throwable -> throwable instanceof OptimisticLockingFailureException)
+                                                                .doBeforeRetry(retrySignal -> log.warn(
+                                                                        "Failed to update post cover due to conflict, retry attempt: {}",
+                                                                        retrySignal.totalRetries() + 1)))
+                                                        .then(this.client.fetch(CoverGenerateRecord.class,
+                                                                createdRecord.getMetadata().getName()))
                                                         .flatMap(latestRecord -> {
                                                             latestRecord.getSpec()
                                                                     .setStatus(CoverGenerateRecord.Status.SUCCESS);
                                                             return this.client.update(latestRecord);
-                                                        })
-                                                        .then(Mono.defer(() -> this.client
-                                                                .fetch(Post.class, post.getMetadata().getName())
-                                                                .flatMap(latestPost -> {
-                                                                    latestPost.getSpec().setCover(imageUrl);
-                                                                    return this.client.update(latestPost);
-                                                                }))
-                                                                .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
-                                                                        .filter(throwable -> throwable instanceof OptimisticLockingFailureException)
-                                                                        .doBeforeRetry(retrySignal -> log.warn(
-                                                                                "Failed to update post cover due to conflict, retry attempt: {}",
-                                                                                retrySignal.totalRetries() + 1)))))
+                                                        }))
                                                 .onErrorResume(e -> {
                                                     log.error("Failed to generate cover image for post: {}",
                                                             post.getMetadata().getName(), e);
