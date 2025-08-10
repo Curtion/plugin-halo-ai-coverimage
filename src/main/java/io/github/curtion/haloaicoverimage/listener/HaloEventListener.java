@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import run.halo.app.core.extension.content.Post;
 import run.halo.app.event.post.PostPublishedEvent;
+import run.halo.app.extension.Metadata;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.plugin.ReactiveSettingFetcher;
 
@@ -57,6 +58,9 @@ public class HaloEventListener {
                                 var record = new CoverGenerateRecord();
                                 var spec = new CoverGenerateRecord.Spec();
                                 record.setSpec(spec);
+                                
+                                record.setMetadata(new Metadata());
+                                record.getMetadata().setName("cover-generate-" + post.getMetadata().getName());
 
                                 spec.setStatus(CoverGenerateRecord.Status.PROCESSING);
                                 spec.setLlmProvider(llmSetting.engine().getValue());
