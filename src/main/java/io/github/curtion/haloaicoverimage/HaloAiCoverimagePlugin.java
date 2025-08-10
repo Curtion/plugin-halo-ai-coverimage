@@ -1,6 +1,10 @@
 package io.github.curtion.haloaicoverimage;
 
+import io.github.curtion.haloaicoverimage.model.CoverGenerateRecord;
 import org.springframework.stereotype.Component;
+
+import run.halo.app.extension.Scheme;
+import run.halo.app.extension.SchemeManager;
 import run.halo.app.plugin.BasePlugin;
 import run.halo.app.plugin.PluginContext;
 
@@ -21,17 +25,24 @@ import run.halo.app.plugin.PluginContext;
 @Component
 public class HaloAiCoverimagePlugin extends BasePlugin {
 
-    public HaloAiCoverimagePlugin(PluginContext pluginContext) {
+    private final SchemeManager schemeManager;
+
+   public HaloAiCoverimagePlugin(PluginContext pluginContext, SchemeManager schemeManager) {
         super(pluginContext);
+      this.schemeManager = schemeManager;
     }
+
 
     @Override
     public void start() {
-        System.out.println("插件启动成功！");
+        schemeManager.register(CoverGenerateRecord.class);
+        System.out.println("HaloAiCoverimagePlugin 插件启动了!");
     }
 
     @Override
     public void stop() {
-        System.out.println("插件停止！");
+        Scheme coverGenerateRecordScheme = schemeManager.get(CoverGenerateRecord.class);
+        schemeManager.unregister(coverGenerateRecordScheme);
+        System.out.println("HaloAiCoverimagePlugin 被停止!");
     }
 }
