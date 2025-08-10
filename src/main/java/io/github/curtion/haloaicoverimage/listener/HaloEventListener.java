@@ -63,6 +63,7 @@ public class HaloEventListener {
                                 spec.setLlmModelId(llmSetting.model());
                                 spec.setT2iProvider(t2iSetting.engine().getValue());
                                 spec.setT2iModelId(t2iSetting.model());
+                                spec.setLlmPrompt(llmSetting.prompt());
 
                                 return this.client.create(record)
                                         .flatMap(createdRecord -> llmProviderManager.getProvider(llmSetting.engine())
@@ -75,7 +76,7 @@ public class HaloEventListener {
                                                 .flatMap(prompt -> this.client.fetch(CoverGenerateRecord.class,
                                                         createdRecord.getMetadata().getName())
                                                         .flatMap(latestRecord -> {
-                                                            latestRecord.getSpec().setLlmPrompt(prompt);
+                                                            latestRecord.getSpec().setT2iPrompt(prompt);
                                                             return this.client.update(latestRecord);
                                                         })
                                                         .flatMap(updatedRecord -> t2iProviderManager
