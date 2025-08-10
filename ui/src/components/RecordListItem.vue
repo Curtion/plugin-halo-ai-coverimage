@@ -6,25 +6,31 @@ defineProps<{
   record: CoverGenerateRecord
 }>()
 
-const statusMap = {
+interface StatusProperty {
+  label: string
+  state: 'success' | 'warning' | 'error'
+  animate: boolean
+}
+
+const statusMap: Record<'PROCESSING' | 'SUCCESS' | 'FAILED', StatusProperty> = {
   PROCESSING: {
     label: '处理中',
-    color: 'yellow',
+    state: 'warning',
     animate: true,
   },
   SUCCESS: {
     label: '成功',
-    color: 'green',
+    state: 'success',
     animate: false,
   },
   FAILED: {
     label: '失败',
-    color: 'red',
+    state: 'error',
     animate: false,
   },
 }
 
-function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED') {
+function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusProperty {
   return statusMap[status]
 }
 </script>
@@ -45,7 +51,7 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED') {
     </td>
     <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       <VStatusDot
-        :status="getRecordStatus(record.spec.status).color"
+        :state="getRecordStatus(record.spec.status).state"
         :label="getRecordStatus(record.spec.status).label"
         :animate="getRecordStatus(record.spec.status).animate"
       />

@@ -6,6 +6,7 @@ import io.github.curtion.haloaicoverimage.provider.T2iProviderManager;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.time.Duration;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -60,7 +61,8 @@ public class HaloEventListener {
                                 record.setSpec(spec);
                                 
                                 record.setMetadata(new Metadata());
-                                record.getMetadata().setName("cover-generate-" + post.getMetadata().getName());
+                                record.getMetadata().setName("cover-generate-" + post.getMetadata().getName() + "-"
+                                        + UUID.randomUUID().toString().substring(0, 8));
 
                                 spec.setStatus(CoverGenerateRecord.Status.PROCESSING);
                                 spec.setLlmProvider(llmSetting.engine().getValue());
