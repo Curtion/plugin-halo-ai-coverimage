@@ -75,41 +75,47 @@ public class HaloEventListener {
                                         llmSetting.engine());
                                     return Mono.empty();
                                 })
-                                .flatMap(prompt -> {
-                                    createdRecord.getSpec().setPrompt(prompt);
-                                    return this.client.update(createdRecord)
+                                .flatMap(prompt -> this.client.fetch(CoverGenerateRecord.class,
+                                            createdRecord.getMetadata().getName())
+                                        .flatMap(latestRecord -> {
+                                            latestRecord.getSpec().setPrompt(prompt);
+                                            return this.client.update(latestRecord);
+                                        })
                                         .flatMap(updatedRecord -> t2iProviderManager.getProvider(t2iSetting.engine())
-                                            .map(t2iProvider -> t2iProvider.generate(prompt,
-                                                t2iSetting))
+                                            .map(t2iProvider -> t2iProvider.generate(prompt, t2iSetting))
                                             .orElseGet(() -> {
-                                                log.warn("No T2I provider found for engine: {}",
-                                                    t2iSetting.engine());
+                                                log.warn("No T2I provider found for engine: {}", t2iSetting.engine());
                                                 return Mono.empty();
-                                            }));
-                                })
-                                .flatMap(imageUrl -> {
-                                    createdRecord.getSpec().setStatus("Success");
-                                    return this.client.update(createdRecord)
-                                        .then(Mono.defer(
-                                            () -> this.client.fetch(Post.class,
-                                                    post.getMetadata().getName())
-                                                .flatMap(latestPost -> {
-                                                    latestPost.getSpec().setCover(imageUrl);
-                                                    return this.client.update(latestPost);
-                                                }))
+                                            })
+                                        )
+                                )
+                                .flatMap(imageUrl -> this.client.fetch(CoverGenerateRecord.class,
+                                            createdRecord.getMetadata().getName())
+                                        .flatMap(latestRecord -> {
+                                            latestRecord.getSpec().setStatus("Success");
+                                            return this.client.update(latestRecord);
+                                        })
+                                        .then(Mono.defer(() -> this.client.fetch(Post.class, post.getMetadata().getName())
+                                            .flatMap(latestPost -> {
+                                                latestPost.getSpec().setCover(imageUrl);
+                                                return this.client.update(latestPost);
+                                            }))
                                             .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
-                                                .filter(
-                                                    throwable -> throwable instanceof OptimisticLockingFailureException)
+                                                .filter(throwable -> throwable instanceof OptimisticLockingFailureException)
                                                 .doBeforeRetry(retrySignal -> log.warn(
                                                     "Failed to update post cover due to conflict, retry attempt: {}",
-                                                    retrySignal.totalRetries() + 1))));
-                                })
+                                                    retrySignal.totalRetries() + 1))))
+                                )
                                 .onErrorResume(e -> {
-                                    log.error("Failed to generate cover image for post: {}",
-                                        post.getMetadata().getName(), e);
-                                    createdRecord.getSpec().setStatus("Failed");
-                                    return this.client.update(createdRecord).then(Mono.empty());
-                                }));
+                                    log.error("Failed to generate cover image for post: {}", post.getMetadata().getName(), e);
+                                    return this.client.fetch(CoverGenerateRecord.class, createdRecord.getMetadata().getName())
+                                        .flatMap(latestRecord -> {
+                                            latestRecord.getSpec().setStatus("Failed");
+                                            return this.client.update(latestRecord);
+                                        })
+                                        .then(Mono.empty());
+                                })
+                            );
                     });
             })
             .then();
