@@ -1,13 +1,12 @@
 package io.github.curtion.haloaicoverimage.service;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Objects;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.attachment.Attachment;
@@ -43,10 +42,8 @@ public class UrlAttachmentUploader {
 
         final URL externalUrl;
         try {
-            externalUrl = new URI(url).toURL();
+            externalUrl = UriComponentsBuilder.fromUriString(url).build(true).toUri().toURL();
         } catch (MalformedURLException e) {
-            return Mono.error(new IllegalArgumentException("Invalid url: " + url, e));
-        } catch (URISyntaxException e) {
             return Mono.error(new IllegalArgumentException("Invalid url: " + url, e));
         }
 
@@ -62,6 +59,8 @@ public class UrlAttachmentUploader {
             }
         }
 
-        return attachmentService.uploadFromUrl(externalUrl, "default-policy", groupName, effectiveFilename);
+        System.out.println("Uploading attachment from ToURL: " + externalUrl);
+
+        return attachmentService.uploadFromUrl(externalUrl, "default-policy", "", "");
     }
 }

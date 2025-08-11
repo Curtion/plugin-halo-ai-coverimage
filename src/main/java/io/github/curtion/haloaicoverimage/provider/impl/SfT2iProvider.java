@@ -65,7 +65,7 @@ public class SfT2iProvider implements T2iProvider {
                             String filename = UUID.randomUUID().toString();
                             // 上传到 Halo 并返回存储 URI
                             return urlAttachmentUploader
-                                .uploadFromUrl(imageUrl, "", filename)
+                                .uploadFromUrl(imageUrl, "", filename+".jpeg")
                                 .flatMap(attachment -> {
                                     Map<String, String> annotations = attachment
                                         .getMetadata()
