@@ -55,6 +55,14 @@ public class HaloEventListener {
                                     log.warn("LLM或T2I设置未配置, 跳过。");
                                     return Mono.empty();
                                 }
+                                if(llmSetting.apiKey() == null || llmSetting.apiKey().isEmpty()) {
+                                    log.warn("LLM设置未配置API Key, 跳过。");
+                                    return Mono.empty();
+                                }
+                                if(t2iSetting.apiKey() == null || t2iSetting.apiKey().isEmpty()) {
+                                    log.warn("T2I设置未配置API Key, 跳过。");
+                                    return Mono.empty();
+                                }
 
                                 var record = new CoverGenerateRecord();
                                 var spec = new CoverGenerateRecord.Spec();
