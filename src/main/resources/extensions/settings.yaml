@@ -4,6 +4,14 @@ metadata:
   name: plugin-aicoverimage-settings
 spec:
   forms:
+    - group: attachmentStorage
+      label: 附件存储设置
+      formSchema:
+        - $formkit: text
+          name: group
+          label: 存储分组
+          placeholder: "请输入附件存储分组"
+          help: "进入附件页面点击需要存储的分组, 地址栏中?group=后面的内容"
     - group: llmProvider
       label: LLM提供商设置
       formSchema:
