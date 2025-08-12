@@ -2,15 +2,22 @@ package io.github.curtion.haloaicoverimage.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Objects;
 
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.attachment.Attachment;
 import run.halo.app.core.extension.service.AttachmentService;
+import run.halo.app.core.user.service.UserService;
 
 /**
  * 基于 Halo AttachmentService 的 URL 上传封装。
@@ -20,25 +27,15 @@ import run.halo.app.core.extension.service.AttachmentService;
 public class UrlAttachmentUploader {
 
     private final AttachmentService attachmentService;
+    private final UserService userService;
 
-    public UrlAttachmentUploader(AttachmentService attachmentService) {
+    public UrlAttachmentUploader(AttachmentService attachmentService, UserService userService) {
         this.attachmentService = attachmentService;
+        this.userService = userService;
     }
 
-    /**
-     * 通过外部 URL 上传附件。
-     *
-     * 契约：
-     * - 输入：url 字符串、策略名 policyName（必填）、分组名 groupName（可空）、文件名 filename（可空）
-     * - 输出：Mono<Attachment>，成功时包含创建的附件对象
-     * - 错误：当 url 无效或 policyName 为空将返回 Mono.error(IllegalArgumentException)
-     */
-    public Mono<Attachment> uploadFromUrl(@NonNull String url,
-            String groupName,
-            String filename) {
+    public Mono<String> uploadFromUrl(@NonNull String url, String groupName) {
         Objects.requireNonNull(url, "url must not be null");
-
-        System.out.println("Uploading attachment from URL: " + url);
 
         final URL externalUrl;
         try {
@@ -47,20 +44,17 @@ public class UrlAttachmentUploader {
             return Mono.error(new IllegalArgumentException("Invalid url: " + url, e));
         }
 
-        // 如果未提供文件名，则尝试从 URL 路径中解析一个
-        String effectiveFilename = filename;
-        if (effectiveFilename == null || effectiveFilename.isBlank()) {
-            String path = externalUrl.getPath();
-            int idx = path.lastIndexOf('/') + 1;
-            effectiveFilename = idx >= 0 && idx < path.length() ? path.substring(idx) : null;
-            if (effectiveFilename == null || effectiveFilename.isBlank()) {
-                // 兜底一个简单的文件名
-                effectiveFilename = "attachment";
-            }
-        }
-
-        System.out.println("Uploading attachment from ToURL: " + externalUrl);
-
-        return attachmentService.uploadFromUrl(externalUrl, "default-policy", "", "");
+        Mono<Attachment> attachmentMono = userService.getUser("admin")
+                .flatMap(user -> {
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                            user.getMetadata().getName(),
+                            null,
+                            Collections.emptyList());
+                    SecurityContext securityContext = new SecurityContextImpl(authentication);
+                    return attachmentService.uploadFromUrl(externalUrl, "default-policy", groupName, "")
+                            .contextWrite(
+                                    ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+                });
+        return attachmentMono.flatMap(attachment -> attachmentService.getPermalink(attachment)).flatMap(uri -> Mono.just(uri.toString()));
     }
 }

@@ -104,7 +104,7 @@ watch(
         </VEmpty>
       </Transition>
       <Transition v-else appear name="fade">
-        <div class="overflow-x-auto">
+        <div>
           <table class="w-full table-auto">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
@@ -120,10 +120,10 @@ watch(
                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   T2I 提供者
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   状态
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   创建时间
                 </th>
               </tr>

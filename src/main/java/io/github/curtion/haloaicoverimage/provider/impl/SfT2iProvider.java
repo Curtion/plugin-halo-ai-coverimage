@@ -11,7 +11,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -35,56 +34,37 @@ public class SfT2iProvider implements T2iProvider {
     public Mono<String> generate(String prompt, T2iProviderSetting setting) {
         try {
             Map<String, Object> body = Map.of(
-                "model", setting.model(),
-                "prompt", prompt,
-                "image_size", "1024x1024",
-                "batch_size", 1,
-                "num_inference_steps", 20,
-                "guidance_scale", 7.5
-            );
+                    "model", setting.model(),
+                    "prompt", prompt,
+                    "image_size", "720x1280",
+                    "batch_size", 1,
+                    "num_inference_steps", 20,
+                    "guidance_scale", 7.5);
 
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.siliconflow.cn/v1/images/generations"))
-                .header("Authorization", "Bearer " + setting.apiKey())
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(
-                    objectMapper.writeValueAsString(body)))
-                .build();
+                    .uri(URI.create("https://api.siliconflow.cn/v1/images/generations"))
+                    .header("Authorization", "Bearer " + setting.apiKey())
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(
+                            objectMapper.writeValueAsString(body)))
+                    .build();
 
             return Mono.fromFuture(
                     httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
-                .map(HttpResponse::body)
-                .flatMap(responseBody -> {
-                    try {
-                        Map<String, Object> responseMap =
-                            objectMapper.readValue(responseBody, Map.class);
-                        List<Map<String, Object>> images =
-                            (List<Map<String, Object>>) responseMap.get("images");
-                        if (images != null && !images.isEmpty()) {
-                            String imageUrl = (String) images.get(0).get("url");
-                            String filename = UUID.randomUUID().toString();
-                            // 上传到 Halo 并返回存储 URI
-                            return urlAttachmentUploader
-                                .uploadFromUrl(imageUrl, "", filename+".jpeg")
-                                .flatMap(attachment -> {
-                                    Map<String, String> annotations = attachment
-                                        .getMetadata()
-                                        .getAnnotations();
-                                    String uri = annotations != null
-                                        ? annotations.get("storage.halo.run/uri")
-                                        : null;
-                                    if (uri == null || uri.isBlank()) {
-                                        return Mono.error(new IllegalStateException(
-                                            "Attachment missing storage uri annotation"));
-                                    }
-                                    return Mono.just(uri);
-                                });
+                    .map(HttpResponse::body)
+                    .flatMap(responseBody -> {
+                        try {
+                            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
+                            List<Map<String, Object>> images = (List<Map<String, Object>>) responseMap.get("images");
+                            if (images != null && !images.isEmpty()) {
+                                String imageUrl = (String) images.get(0).get("url");
+                                return urlAttachmentUploader.uploadFromUrl(imageUrl, "");
+                            }
+                        } catch (Exception e) {
+                            return Mono.error(e);
                         }
-                    } catch (Exception e) {
-                        return Mono.error(e);
-                    }
-                    return Mono.error(new IllegalStateException("No images returned by provider"));
-                });
+                        return Mono.error(new IllegalStateException("No images returned by provider"));
+                    });
         } catch (Exception e) {
             return Mono.error(e);
         }

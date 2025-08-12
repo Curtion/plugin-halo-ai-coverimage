@@ -43,20 +43,20 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
     <td v-tooltip="record.spec.t2iPrompt" class="max-w-sm truncate px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       {{ record.spec.t2iPrompt }}
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       {{ `${record.spec.llmProvider} (${record.spec.llmModelId})` }}
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       {{ `${record.spec.t2iProvider} (${record.spec.t2iModelId})` }}
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       <VStatusDot
         :state="getRecordStatus(record.spec.status).state"
         :label="getRecordStatus(record.spec.status).label"
         :animate="getRecordStatus(record.spec.status).animate"
       />
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       {{ record.metadata.creationTimestamp }}
     </td>
   </tr>
