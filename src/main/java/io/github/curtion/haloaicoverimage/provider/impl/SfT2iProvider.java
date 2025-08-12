@@ -3,6 +3,7 @@ package io.github.curtion.haloaicoverimage.provider.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.provider.T2iProvider;
+import io.github.curtion.haloaicoverimage.setting.AttachmentStorageSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import io.github.curtion.haloaicoverimage.service.UrlAttachmentUploader;
 import java.net.URI;
@@ -31,7 +32,8 @@ public class SfT2iProvider implements T2iProvider {
     }
 
     @Override
-    public Mono<String> generate(String prompt, T2iProviderSetting setting) {
+    public Mono<String> generate(
+            String prompt, T2iProviderSetting setting, AttachmentStorageSetting attachmentStorageSetting) {
         try {
             Map<String, Object> body = Map.of(
                     "model", setting.model(),
@@ -50,20 +52,24 @@ public class SfT2iProvider implements T2iProvider {
                     .build();
 
             return Mono.fromFuture(
-                    httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
+                            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()))
                     .map(HttpResponse::body)
                     .flatMap(responseBody -> {
                         try {
-                            Map<String, Object> responseMap = objectMapper.readValue(responseBody, Map.class);
-                            List<Map<String, Object>> images = (List<Map<String, Object>>) responseMap.get("images");
+                            Map<String, Object> responseMap =
+                                    objectMapper.readValue(responseBody, Map.class);
+                            List<Map<String, Object>> images =
+                                    (List<Map<String, Object>>) responseMap.get("images");
                             if (images != null && !images.isEmpty()) {
                                 String imageUrl = (String) images.get(0).get("url");
-                                return urlAttachmentUploader.uploadFromUrl(imageUrl, "");
+                                return urlAttachmentUploader.uploadFromUrl(
+                                        imageUrl, attachmentStorageSetting.group());
                             }
                         } catch (Exception e) {
                             return Mono.error(e);
                         }
-                        return Mono.error(new IllegalStateException("No images returned by provider"));
+                        return Mono.error(
+                                new IllegalStateException("No images returned by provider"));
                     });
         } catch (Exception e) {
             return Mono.error(e);

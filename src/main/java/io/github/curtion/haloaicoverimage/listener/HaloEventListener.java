@@ -3,6 +3,7 @@ package io.github.curtion.haloaicoverimage.listener;
 import io.github.curtion.haloaicoverimage.model.CoverGenerateRecord;
 import io.github.curtion.haloaicoverimage.provider.LlmProviderManager;
 import io.github.curtion.haloaicoverimage.provider.T2iProviderManager;
+import io.github.curtion.haloaicoverimage.setting.AttachmentStorageSetting;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.time.Duration;
@@ -43,15 +44,20 @@ public class HaloEventListener {
         return this.client.fetch(Post.class, event.getName())
                 .filter(post -> post.getSpec().getCover() == null || post.getSpec().getCover().isEmpty())
                 .flatMap(post -> {
-                    var llmSettingsMono = settingFetcher.fetch(LlmProviderSetting.GROUP_NAME, LlmProviderSetting.class);
-                    var t2iSettingsMono = settingFetcher.fetch(T2iProviderSetting.GROUP_NAME, T2iProviderSetting.class);
+                    var llmSettingsMono =
+                        settingFetcher.fetch(LlmProviderSetting.GROUP_NAME, LlmProviderSetting.class);
+                    var t2iSettingsMono =
+                        settingFetcher.fetch(T2iProviderSetting.GROUP_NAME, T2iProviderSetting.class);
+                    var attachmentStorageSettingsMono = settingFetcher.fetch(
+                        AttachmentStorageSetting.GROUP_NAME, AttachmentStorageSetting.class);
 
-                    return Mono.zip(llmSettingsMono, t2iSettingsMono)
+                    return Mono.zip(llmSettingsMono, t2iSettingsMono, attachmentStorageSettingsMono)
                             .flatMap(tuple -> {
                                 var llmSetting = tuple.getT1();
                                 var t2iSetting = tuple.getT2();
+                                var attachmentStorageSetting = tuple.getT3();
 
-                                if (llmSetting == null || t2iSetting == null) {
+                                if (llmSetting == null || t2iSetting == null || attachmentStorageSetting == null) {
                                     log.warn("LLM或T2I设置未配置, 跳过。");
                                     return Mono.empty();
                                 }
@@ -96,7 +102,7 @@ public class HaloEventListener {
                                                         .flatMap(updatedRecord -> t2iProviderManager
                                                                 .getProvider(t2iSetting.engine())
                                                                 .map(t2iProvider -> t2iProvider.generate(prompt,
-                                                                        t2iSetting))
+                                                                    t2iSetting, attachmentStorageSetting))
                                                                 .orElseGet(() -> {
                                                                     log.warn("No T2I provider found for engine: {}",
                                                                             t2iSetting.engine());
