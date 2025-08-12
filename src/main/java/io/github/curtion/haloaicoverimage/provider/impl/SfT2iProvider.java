@@ -36,7 +36,7 @@ public class SfT2iProvider implements T2iProvider {
             Map<String, Object> body = Map.of(
                     "model", setting.model(),
                     "prompt", prompt,
-                    "image_size", "720x1280",
+                    "image_size", "1024x1024",
                     "batch_size", 1,
                     "num_inference_steps", 20,
                     "guidance_scale", 7.5);

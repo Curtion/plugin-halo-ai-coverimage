@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CoverGenerateRecord } from '../types'
 import { VButton, VStatusDot } from '@halo-dev/components'
+import dayjs from 'dayjs'
 
 defineProps<{
   record: CoverGenerateRecord
@@ -41,29 +42,31 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
 
 <template>
   <tr class="hover:bg-gray-50 dark:hover:bg-gray-600">
-    <td v-tooltip="record.spec.llmPrompt" class="max-w-sm truncate px-6 py-4 text-sm text-gray-900 dark:text-white">
+    <td v-tooltip="record.spec.llmPrompt" class="max-w-sm truncate px-6 py-4 text-center text-sm text-gray-900 dark:text-white">
       {{ record.spec.llmPrompt }}
     </td>
-    <td v-tooltip="record.spec.t2iPrompt" class="max-w-sm truncate px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td v-tooltip="record.spec.t2iPrompt" class="max-w-sm truncate text-center text-sm text-gray-500 dark:text-gray-300">
       {{ record.spec.t2iPrompt }}
     </td>
-    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="text-center text-sm text-gray-500 dark:text-gray-300">
       {{ `${record.spec.llmProvider} (${record.spec.llmModelId})` }}
     </td>
-    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+    <td class="text-center text-sm text-gray-500 dark:text-gray-300">
       {{ `${record.spec.t2iProvider} (${record.spec.t2iModelId})` }}
     </td>
-    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
-      <VStatusDot
-        :state="getRecordStatus(record.spec.status).state"
-        :label="getRecordStatus(record.spec.status).label"
-        :animate="getRecordStatus(record.spec.status).animate"
-      />
+    <td class="text-center text-sm text-gray-500 dark:text-gray-300">
+      <div class="flex justify-center">
+        <VStatusDot
+          :state="getRecordStatus(record.spec.status).state"
+          :label="getRecordStatus(record.spec.status).label"
+          :animate="getRecordStatus(record.spec.status).animate"
+        />
+      </div>
     </td>
-    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
-      {{ record.metadata.creationTimestamp }}
+    <td class="text-center text-sm text-gray-500 dark:text-gray-300">
+      {{ dayjs(record.metadata.creationTimestamp).format('YYYY-MM-DD HH:mm:ss') }}
     </td>
-    <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+    <td class="whitespace-nowrap px-6 py-4 text-center text-sm">
       <VButton type="danger" size="sm" @click="emit('delete', record)">
         删除
       </VButton>

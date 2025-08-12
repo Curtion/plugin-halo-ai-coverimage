@@ -1,8 +1,9 @@
-import { defineConfig, presetAttributify, presetMini } from 'unocss'
+import { defineConfig, presetAttributify, presetWind3, transformerCompileClass } from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetMini(),
+    presetWind3(),
     presetAttributify(),
   ],
+  transformers: [transformerCompileClass()],
 })

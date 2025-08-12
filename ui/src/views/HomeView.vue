@@ -130,34 +130,34 @@ function onCancelDelete() {
         </VEmpty>
       </Transition>
       <Transition v-else appear name="fade">
-        <div>
-          <table class="w-full table-auto">
+        <div class="overflow-x-auto">
+          <table class="min-w-full table-auto">
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   LLM 提示词
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   T2I 提示词
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class=":uno: hidden px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase md:table-cell dark:text-gray-300">
                   LLM 提供者
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class=":uno: hidden px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase md:table-cell dark:text-gray-300">
                   T2I 提供者
                 </th>
-                <th class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   状态
                 </th>
-                <th class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   创建时间
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   操作
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
               <RecordListItem
                 v-for="(record, index) in records?.items"
                 :key="record.metadata.name"
