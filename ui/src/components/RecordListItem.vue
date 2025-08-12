@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { CoverGenerateRecord } from '../types'
-import { VStatusDot } from '@halo-dev/components'
+import { VButton, VStatusDot } from '@halo-dev/components'
 
 defineProps<{
   record: CoverGenerateRecord
+}>()
+
+const emit = defineEmits<{
+  (e: 'delete', record: CoverGenerateRecord): void
 }>()
 
 interface StatusProperty {
@@ -58,6 +62,11 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
     </td>
     <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
       {{ record.metadata.creationTimestamp }}
+    </td>
+    <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+      <VButton type="danger" size="sm" @click="emit('delete', record)">
+        删除
+      </VButton>
     </td>
   </tr>
 </template>

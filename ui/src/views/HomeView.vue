@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { CoverGenerateRecordList } from '../types'
+import type { CoverGenerateRecord, CoverGenerateRecordList } from '../types'
 import {
   IconRefreshLine,
   VButton,
   VCard,
+  VDialog,
   VEmpty,
   VLoading,
   VPageHeader,
@@ -13,7 +14,7 @@ import {
 import { useQuery } from '@tanstack/vue-query'
 import { useRouteQuery } from '@vueuse/router'
 import axios from 'axios'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import IconWrench from '~icons/iconoir/wrench'
 import RecordListItem from '../components/RecordListItem.vue'
 
@@ -65,6 +66,31 @@ watch(
     }
   },
 )
+
+const dialog = ref({
+  visible: false,
+  record: null as CoverGenerateRecord | null,
+  index: -1,
+})
+
+function handleDeleteItem(record: CoverGenerateRecord, index: number) {
+  dialog.value.visible = true
+  dialog.value.record = record
+  dialog.value.index = index
+}
+
+function onConfirmDelete() {
+  if (dialog.value.index !== -1) {
+    records.value?.items.splice(dialog.value.index, 1)
+  }
+  onCancelDelete()
+}
+
+function onCancelDelete() {
+  dialog.value.visible = false
+  dialog.value.record = null
+  dialog.value.index = -1
+}
 </script>
 
 <template>
@@ -126,13 +152,17 @@ watch(
                 <th class="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
                   创建时间
                 </th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                  操作
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
               <RecordListItem
-                v-for="record in records?.items"
+                v-for="(record, index) in records?.items"
                 :key="record.metadata.name"
                 :record="record"
+                @delete="handleDeleteItem(record, index)"
               />
             </tbody>
           </table>
@@ -152,4 +182,14 @@ watch(
       </template>
     </VCard>
   </div>
+  <VDialog
+    :visible="dialog.visible"
+    title="确定删除吗？"
+    description="你确定要删除这条记录吗？"
+    type="warning"
+    confirm-type="danger"
+    @close="onCancelDelete"
+    @cancel="onCancelDelete"
+    @confirm="onConfirmDelete"
+  />
 </template>
