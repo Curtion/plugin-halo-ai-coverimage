@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,6 +56,19 @@ public class UrlAttachmentUploader {
                             .contextWrite(
                                     ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
                 });
-        return attachmentMono.flatMap(attachment -> attachmentService.getPermalink(attachment)).flatMap(uri -> Mono.just(uri.toString()));
+        return attachmentMono
+                .flatMap(attachment -> {
+                    if (attachment == null || attachment.getStatus() == null) {
+                        return attachmentService.getPermalink(attachment);
+                    }
+                    String thumbnailUrl = Optional.ofNullable(attachment.getStatus().getThumbnails())
+                            .map(thumbnails -> thumbnails.get("S"))
+                            .orElse(null);
+                    if (thumbnailUrl == null || thumbnailUrl.isEmpty()) {
+                        return attachmentService.getPermalink(attachment);
+                    }
+                    return Mono.just(thumbnailUrl);
+                })
+                .flatMap(uri -> Mono.just(uri.toString()));
     }
 }
