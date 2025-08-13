@@ -12,6 +12,12 @@ Halo AI封面图插件
 
 [下载插件](https://github.com/Curtion/plugin-halo-ai-coverimage/releases)
 
+## 下一步
+
+ - [ ] 更多的API接入
+
+预计应该使用`Spring AI`或者其他类似方案来实现大多数API计入, 欢迎PR
+
 ## 开发环境
 
 - Java 21+
