@@ -1,10 +1,16 @@
 # halo-ai-coverimage
 
-halo-ai-coverimage - Halo 插件
+这是一个基于 Halo 的插件项目。
 
 ## 简介
 
-这是一个基于 Halo 的插件项目。
+接入`硅基流动`API, 实现发布文章且没有设置封面图时, 插件自动分析文章内容生成并设置封面图。
+
+插件预设了一个提示词, 如果有不同风格要求可在插件设置中修改。
+
+[在线预览 https://blog.3gxk.net/](https://blog.3gxk.net/)
+
+[下载插件](https://github.com/Curtion/plugin-halo-ai-coverimage/releases)
 
 ## 开发环境
 
