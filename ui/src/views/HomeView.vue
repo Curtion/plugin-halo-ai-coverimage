@@ -2,6 +2,7 @@
 import type { CoverGenerateRecord, CoverGenerateRecordList } from '../types'
 import {
   IconRefreshLine,
+  Toast,
   VButton,
   VCard,
   VDialog,
@@ -80,10 +81,25 @@ function handleDeleteItem(record: CoverGenerateRecord, index: number) {
 }
 
 function onConfirmDelete() {
-  if (dialog.value.index !== -1) {
-    records.value?.items.splice(dialog.value.index, 1)
+  const name = dialog.value.record?.metadata.name
+  axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`).then(() => {
+    Toast.success('删除成功')
+    updateList(name)
+    onCancelDelete()
+  }).catch((err) => {
+    Toast.error(`删除失败: ${String(err)}`)
+  })
+}
+
+async function updateList(name?: string) {
+  if (!name) {
+    return
   }
-  onCancelDelete()
+  await refetch()
+  if (records.value?.items.find(item => item.metadata.name === name)) {
+    await new Promise(resolve => setTimeout(resolve, 500))
+    await refetch()
+  }
 }
 
 function onCancelDelete() {
