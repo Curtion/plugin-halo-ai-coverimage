@@ -1,6 +1,6 @@
 # halo-ai-coverimage
 
-这是一个基于 Halo 的插件项目。
+Halo AI封面图插件
 
 ## 简介
 
