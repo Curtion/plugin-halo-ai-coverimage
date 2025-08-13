@@ -41,3 +41,8 @@ pnpm dev
 ## 许可证
 
 [GPL-3.0](./LICENSE) © Curtion 
+
+# 赞助
+
+![1](./doc/支付宝.jpg)
+![2](./doc/微信.jpg)
