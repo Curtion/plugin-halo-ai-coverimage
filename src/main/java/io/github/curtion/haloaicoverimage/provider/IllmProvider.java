@@ -8,7 +8,7 @@ import run.halo.app.core.extension.content.Post;
 /**
  * LLM provider extension point.
  */
-public interface LlmProvider {
+public interface IllmProvider {
 
     /**
      * Returns the engine type of this provider.

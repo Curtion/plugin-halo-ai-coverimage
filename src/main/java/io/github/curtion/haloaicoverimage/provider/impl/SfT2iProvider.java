@@ -2,8 +2,8 @@ package io.github.curtion.haloaicoverimage.provider.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
-import io.github.curtion.haloaicoverimage.provider.T2iProvider;
-import io.github.curtion.haloaicoverimage.setting.AttachmentStorageSetting;
+import io.github.curtion.haloaicoverimage.provider.It2iProvider;
+import io.github.curtion.haloaicoverimage.setting.BasicSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import io.github.curtion.haloaicoverimage.service.UrlAttachmentUploader;
 import java.net.URI;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-public class SfT2iProvider implements T2iProvider {
+public class SfT2iProvider implements It2iProvider {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -33,7 +33,7 @@ public class SfT2iProvider implements T2iProvider {
 
     @Override
     public Mono<String> generate(
-            String prompt, T2iProviderSetting setting, AttachmentStorageSetting attachmentStorageSetting) {
+            String prompt, T2iProviderSetting setting, BasicSetting basicSetting) {
         try {
             Map<String, Object> body = Map.of(
                     "model", setting.model(),
@@ -63,7 +63,7 @@ public class SfT2iProvider implements T2iProvider {
                             if (images != null && !images.isEmpty()) {
                                 String imageUrl = (String) images.get(0).get("url");
                                 return urlAttachmentUploader.uploadFromUrl(
-                                        imageUrl, attachmentStorageSetting.group(),"S");
+                                        imageUrl, basicSetting.group(), basicSetting.quality());
                             }
                         } catch (Exception e) {
                             return Mono.error(e);

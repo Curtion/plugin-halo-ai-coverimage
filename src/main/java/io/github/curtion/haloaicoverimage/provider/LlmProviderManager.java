@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class LlmProviderManager {
 
-    private final Map<ProviderEngine, LlmProvider> providers;
+    private final Map<ProviderEngine, IllmProvider> providers;
 
     /**
      * Injects all LlmProvider beans and maps them by their engine type.
      *
      * @param providerList A list of all LlmProvider implementations found by Spring.
      */
-    public LlmProviderManager(List<LlmProvider> providerList) {
+    public LlmProviderManager(List<IllmProvider> providerList) {
         this.providers = providerList.stream()
-            .collect(Collectors.toMap(LlmProvider::getProviderEngine, Function.identity()));
+            .collect(Collectors.toMap(IllmProvider::getProviderEngine, Function.identity()));
     }
 
     /**
@@ -29,7 +29,7 @@ public class LlmProviderManager {
      * @param engine The engine selected by the user.
      * @return An Optional containing the LlmProvider if found, otherwise empty.
      */
-    public Optional<LlmProvider> getProvider(ProviderEngine engine) {
+    public Optional<IllmProvider> getProvider(ProviderEngine engine) {
         return Optional.ofNullable(providers.get(engine));
     }
 }

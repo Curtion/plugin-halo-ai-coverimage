@@ -4,14 +4,30 @@ metadata:
   name: plugin-aicoverimage-settings
 spec:
   forms:
-    - group: attachmentStorage
-      label: 附件存储设置
+    - group: basicSetting
+      label: 基础设置
       formSchema:
         - $formkit: text
           name: group
           label: 存储分组
           placeholder: "请输入附件存储分组"
           help: "进入附件页面点击需要存储的分组, 地址栏中?group=后面的内容"
+        - $formkit: select
+          name: quality
+          label: 封面图质量
+          validation: required
+          options:
+            - label: 原图
+              value: ""
+            - label: 宽度 400px
+              value: "S"
+            - label: 宽度 800px
+              value: "M"
+            - label: 宽度 1200px
+              value: "L"
+            - label: 宽度 1600px
+              value: "XL"
+          value: "S"
     - group: llmProvider
       label: LLM提供商设置
       formSchema:
@@ -22,11 +38,13 @@ spec:
             - label: 硅基流动
               value: siliconflow
           value: "siliconflow"
+          validation: required
         - $formkit: text
           name: model
           label: 模型
           placeholder: "请输入模型ID"
           value: "Qwen/Qwen3-235B-A22B-Instruct-2507"
+          validation: required
         - $formkit: password
           name: apiKey
           label: API Key
@@ -37,6 +55,7 @@ spec:
           label: 提示词
           placeholder: "请输入提示词"
           rows: 10
+          validation: required
           value: |
             你是一个专业的AI绘图提示词生成器。你的核心任务是根据我提供的文章信息(标题、内容、分类、标签), 生成一个简洁、清晰、具体的中文绘图提示词, 用于驱动下一个AI模型进行绘画。
 
@@ -80,11 +99,13 @@ spec:
             - label: 硅基流动
               value: siliconflow
           value: "siliconflow"
+          validation: required
         - $formkit: text
           name: model
           label: 模型
           placeholder: "请输入模型ID"
           value: "Kwai-Kolors/Kolors"
+          validation: required
         - $formkit: password
           name: apiKey
           label: API Key

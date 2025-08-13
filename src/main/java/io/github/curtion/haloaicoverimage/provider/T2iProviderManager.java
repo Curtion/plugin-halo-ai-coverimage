@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class T2iProviderManager {
 
-    private final Map<ProviderEngine, T2iProvider> providers;
+    private final Map<ProviderEngine, It2iProvider> providers;
 
     /**
      * Injects all T2iProvider beans and maps them by their engine type.
      *
      * @param providerList A list of all T2iProvider implementations found by Spring.
      */
-    public T2iProviderManager(List<T2iProvider> providerList) {
+    public T2iProviderManager(List<It2iProvider> providerList) {
         this.providers = providerList.stream()
-            .collect(Collectors.toMap(T2iProvider::getProviderEngine, Function.identity()));
+            .collect(Collectors.toMap(It2iProvider::getProviderEngine, Function.identity()));
     }
 
     /**
@@ -29,7 +29,7 @@ public class T2iProviderManager {
      * @param engine The engine selected by the user.
      * @return An Optional containing the T2iProvider if found, otherwise empty.
      */
-    public Optional<T2iProvider> getProvider(ProviderEngine engine) {
+    public Optional<It2iProvider> getProvider(ProviderEngine engine) {
         return Optional.ofNullable(providers.get(engine));
     }
 }

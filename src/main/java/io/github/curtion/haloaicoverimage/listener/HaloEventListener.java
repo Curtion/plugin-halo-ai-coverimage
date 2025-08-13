@@ -3,7 +3,7 @@ package io.github.curtion.haloaicoverimage.listener;
 import io.github.curtion.haloaicoverimage.model.CoverGenerateRecord;
 import io.github.curtion.haloaicoverimage.provider.LlmProviderManager;
 import io.github.curtion.haloaicoverimage.provider.T2iProviderManager;
-import io.github.curtion.haloaicoverimage.setting.AttachmentStorageSetting;
+import io.github.curtion.haloaicoverimage.setting.BasicSetting;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import java.time.Duration;
@@ -49,7 +49,7 @@ public class HaloEventListener {
                     var t2iSettingsMono =
                         settingFetcher.fetch(T2iProviderSetting.GROUP_NAME, T2iProviderSetting.class);
                     var attachmentStorageSettingsMono = settingFetcher.fetch(
-                        AttachmentStorageSetting.GROUP_NAME, AttachmentStorageSetting.class);
+                        BasicSetting.GROUP_NAME, BasicSetting.class);
 
                     return Mono.zip(llmSettingsMono, t2iSettingsMono, attachmentStorageSettingsMono)
                             .flatMap(tuple -> {

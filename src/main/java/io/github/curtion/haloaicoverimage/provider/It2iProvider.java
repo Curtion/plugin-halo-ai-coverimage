@@ -1,14 +1,14 @@
 package io.github.curtion.haloaicoverimage.provider;
 
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
-import io.github.curtion.haloaicoverimage.setting.AttachmentStorageSetting;
+import io.github.curtion.haloaicoverimage.setting.BasicSetting;
 import io.github.curtion.haloaicoverimage.setting.T2iProviderSetting;
 import reactor.core.publisher.Mono;
 
 /**
  * Text to image provider.
  */
-public interface T2iProvider {
+public interface It2iProvider {
 
     /**
      * Returns the engine type of this provider.
@@ -22,9 +22,9 @@ public interface T2iProvider {
      *
      * @param prompt prompt must not be blank
      * @param setting setting must not be null
-     * @param attachmentStorageSetting attachment storage setting must not be null
+     * @param basicSetting attachment storage setting must not be null
      * @return image url
      */
     Mono<String> generate(
-        String prompt, T2iProviderSetting setting, AttachmentStorageSetting attachmentStorageSetting);
+        String prompt, T2iProviderSetting setting, BasicSetting basicSetting);
 }

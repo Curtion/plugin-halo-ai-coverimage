@@ -2,7 +2,7 @@ package io.github.curtion.haloaicoverimage.provider.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
-import io.github.curtion.haloaicoverimage.provider.LlmProvider;
+import io.github.curtion.haloaicoverimage.provider.IllmProvider;
 import io.github.curtion.haloaicoverimage.setting.LlmProviderSetting;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,7 +17,7 @@ import run.halo.app.core.extension.content.Post;
 import reactor.core.publisher.Mono;
 
 @Component
-public class SfLlmProvider implements LlmProvider {
+public class SfLlmProvider implements IllmProvider {
 
     private final PostContentService postContentService;
     private final HttpClient httpClient = HttpClient.newHttpClient();
