@@ -63,7 +63,7 @@ public class SfT2iProvider implements T2iProvider {
                             if (images != null && !images.isEmpty()) {
                                 String imageUrl = (String) images.get(0).get("url");
                                 return urlAttachmentUploader.uploadFromUrl(
-                                        imageUrl, attachmentStorageSetting.group());
+                                        imageUrl, attachmentStorageSetting.group(),"S");
                             }
                         } catch (Exception e) {
                             return Mono.error(e);
