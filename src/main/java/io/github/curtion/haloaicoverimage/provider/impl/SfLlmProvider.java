@@ -48,9 +48,11 @@ public class SfLlmProvider implements LlmProvider {
                             + "分类: " + String.join(", ", categories) + "\n"
                             + "内容: " + content;
 
-                    Map<String, Object> message = Map.of("role", "user", "content", prompt);
-                    Map<String, Object> body =
-                        Map.of("model", setting.model(), "messages", List.of(message));
+                    Map<String, Object> systemMessage =
+                        Map.of("role", "system", "content", setting.prompt());
+                    Map<String, Object> userMessage = Map.of("role", "user", "content", prompt);
+                    Map<String, Object> body = Map.of("model", setting.model(), "messages",
+                        List.of(systemMessage, userMessage));
 
                     HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create("https://api.siliconflow.cn/v1/chat/completions"))
