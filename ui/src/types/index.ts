@@ -19,6 +19,7 @@ export interface CoverGenerateRecordSpec {
   t2iProvider: string
   llmModelId: string
   t2iModelId: string
+  result: string
 }
 
 /**

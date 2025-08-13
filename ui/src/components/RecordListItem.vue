@@ -42,10 +42,7 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
 
 <template>
   <tr class="hover:bg-gray-50 dark:hover:bg-gray-600">
-    <td v-tooltip="record.spec.llmPrompt" class="max-w-sm truncate px-6 py-4 text-center text-sm text-gray-900 dark:text-white">
-      {{ record.spec.llmPrompt }}
-    </td>
-    <td v-tooltip="record.spec.t2iPrompt" class="max-w-sm truncate text-center text-sm text-gray-500 dark:text-gray-300">
+    <td v-tooltip="record.spec.t2iPrompt" class="max-w-sm truncate px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
       {{ record.spec.t2iPrompt }}
     </td>
     <td class="text-center text-sm text-gray-500 dark:text-gray-300">
@@ -62,6 +59,9 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
           :animate="getRecordStatus(record.spec.status).animate"
         />
       </div>
+    </td>
+    <td class="text-center text-sm text-gray-500 dark:text-gray-300">
+      {{ record.spec.result }}
     </td>
     <td class="text-center text-sm text-gray-500 dark:text-gray-300">
       {{ dayjs(record.metadata.creationTimestamp).format('YYYY-MM-DD HH:mm:ss') }}

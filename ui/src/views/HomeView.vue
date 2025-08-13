@@ -151,9 +151,6 @@ function onCancelDelete() {
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  LLM 提示词
-                </th>
-                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   T2I 提示词
                 </th>
                 <th class=":uno: hidden px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase md:table-cell dark:text-gray-300">
@@ -164,6 +161,9 @@ function onCancelDelete() {
                 </th>
                 <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   状态
+                </th>
+                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
+                  处理结果
                 </th>
                 <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
                   创建时间
