@@ -124,6 +124,7 @@ public class HaloEventListener {
                                                         .flatMap(latestRecord -> {
                                                             latestRecord.getSpec()
                                                                     .setStatus(CoverGenerateRecord.Status.SUCCESS);
+                                                            latestRecord.getSpec().setResult(imageUrl);
                                                             return this.client.update(latestRecord);
                                                         }))
                                                 .onErrorResume(e -> {
@@ -135,6 +136,7 @@ public class HaloEventListener {
                                                             .flatMap(latestRecord -> {
                                                                 latestRecord.getSpec()
                                                                         .setStatus(CoverGenerateRecord.Status.FAILED);
+                                                                latestRecord.getSpec().setResult(e.getMessage());
                                                                 return this.client.update(latestRecord);
                                                             })
                                                             .then(Mono.empty());

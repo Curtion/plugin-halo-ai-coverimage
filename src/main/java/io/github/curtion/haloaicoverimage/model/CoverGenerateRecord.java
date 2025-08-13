@@ -40,6 +40,9 @@ public class CoverGenerateRecord extends AbstractExtension {
 
         @Schema(description = "T2I模型")
         private String t2iModelId;
+
+        @Schema(description = "任务执行结果, 成功时为图片URL, 失败时为错误信息")
+        private String result;
     }
 
     public enum Status {

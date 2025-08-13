@@ -43,12 +43,10 @@ public class SfLlmProvider implements LlmProvider {
             .map(ContentWrapper::getRaw)
             .flatMap(content -> {
                 try {
-                    String prompt =
-                        "The following is the basic information of a blog post. Please generate a suitable prompt for generating a cover image for this article based on this information. The prompt should be in English and as detailed as possible. You only need to return the prompt itself, without any other content.\n"
-                            + "Title: " + title + "\n"
-                            + "Tags: " + String.join(", ", tags) + "\n"
-                            + "Categories: " + String.join(", ", categories) + "\n"
-                            + "Content: " + content;
+                    String prompt = "标题: " + title + "\n"
+                            + "标签: " + String.join(", ", tags) + "\n"
+                            + "分类: " + String.join(", ", categories) + "\n"
+                            + "内容: " + content;
 
                     Map<String, Object> message = Map.of("role", "user", "content", prompt);
                     Map<String, Object> body =
