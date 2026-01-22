@@ -7,11 +7,20 @@ spec:
     - group: basicSetting
       label: 基础设置
       formSchema:
-        - $formkit: text
+        - $formkit: select
           name: group
           label: 存储分组
-          placeholder: "请输入附件存储分组"
-          help: "进入附件页面点击需要存储的分组, 地址栏中?group=后面的内容"
+          searchable: true
+          help: "用于指定图片转存上传的默认附件存储分组"
+          action: /apis/storage.halo.run/v1alpha1/groups?labelSelector=%21halo.run%2Fhidden&sort=metadata.creationTimestamp%2Cdesc
+          requestOption:
+            method: GET
+            pageField: page
+            sizeField: size
+            totalField: total
+            itemsField: items
+            labelField: spec.displayName
+            valueField: metadata.name
         - $formkit: select
           name: quality
           label: 封面图质量
