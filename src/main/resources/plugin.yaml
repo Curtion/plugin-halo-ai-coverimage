@@ -7,7 +7,7 @@ metadata:
   name: halo-ai-coverimage
 spec:
   enabled: true
-  requires: ">=2.21.0"
+  requires: ">=2.22.0"
   author:
     name: Curtion
     website: https://github.com/Curtion
