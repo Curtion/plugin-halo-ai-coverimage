@@ -28,6 +28,9 @@ Halo AI封面图插件
 cd ui
 pnpm install
 pnpm dev
+
+# 启动Halo
+./gradlew haloServer
 ```
 
 ## 构建
