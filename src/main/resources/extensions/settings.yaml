@@ -43,7 +43,7 @@ spec:
           name: model
           label: 模型
           placeholder: "请输入模型ID"
-          value: "Qwen/Qwen3-235B-A22B-Instruct-2507"
+          value: "deepseek-ai/DeepSeek-V3.2"
           validation: required
         - $formkit: password
           name: apiKey
@@ -104,7 +104,7 @@ spec:
           name: model
           label: 模型
           placeholder: "请输入模型ID"
-          value: "Kwai-Kolors/Kolors"
+          value: "Qwen/Qwen-Image"
           validation: required
         - $formkit: password
           name: apiKey
