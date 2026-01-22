@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { Ref } from 'vue'
 import type { CoverGenerateRecord, CoverGenerateRecordList } from '../types'
 import {
   IconRefreshLine,
@@ -7,17 +8,26 @@ import {
   VCard,
   VDialog,
   VEmpty,
+  VEntityContainer,
   VLoading,
+  VModal,
   VPageHeader,
   VPagination,
   VSpace,
+  VStatusDot,
 } from '@halo-dev/components'
 import { useQuery } from '@tanstack/vue-query'
 import { useRouteQuery } from '@vueuse/router'
 import axios from 'axios'
-import { ref, watch } from 'vue'
+import dayjs from 'dayjs'
+import { computed, provide, ref, watch } from 'vue'
 import IconWrench from '~icons/iconoir/wrench'
 import RecordListItem from '../components/RecordListItem.vue'
+
+const selectedRecordNames = ref<string[]>([])
+const checkedAll = ref(false)
+
+provide<Ref<string[]>>('selectedRecordNames', selectedRecordNames)
 
 const page = useRouteQuery<number>('page', 1, {
   transform: Number,
@@ -25,18 +35,28 @@ const page = useRouteQuery<number>('page', 1, {
 const size = useRouteQuery<number>('size', 20, {
   transform: Number,
 })
-const keyword = useRouteQuery<string>('keyword', '')
+const selectedStatus = useRouteQuery<string | undefined>('status')
+const selectedSort = useRouteQuery<string | undefined>('sort')
 
 const http = axios.create({
   baseURL: '/',
 })
 
 watch(
-  () => [keyword.value],
+  () => [selectedStatus.value, selectedSort.value],
   () => {
     page.value = 1
   },
 )
+
+const hasFilters = computed(() => {
+  return selectedStatus.value !== undefined || selectedSort.value !== undefined
+})
+
+function handleClearFilters() {
+  selectedStatus.value = undefined
+  selectedSort.value = undefined
+}
 
 const {
   data: records,
@@ -44,15 +64,26 @@ const {
   isFetching,
   refetch,
 } = useQuery({
-  queryKey: ['cover-generate-records', page, size, keyword],
+  queryKey: ['cover-generate-records', page, size, selectedStatus, selectedSort],
   queryFn: async () => {
+    const params: Record<string, any> = {
+      page: page.value,
+      size: size.value,
+    }
+
+    // 构建排序参数
+    if (selectedSort.value) {
+      params.sort = selectedSort.value
+    } else {
+      params.sort = 'metadata.creationTimestamp,desc'
+    }
+
+    if (selectedStatus.value) {
+      params.fieldSelector = `spec.status=${selectedStatus.value}`
+    }
+
     const { data } = await http.get<CoverGenerateRecordList>('/apis/io.github.curtion/v1alpha1/covergeneraterecords', {
-      params: {
-        page: page.value,
-        size: size.value,
-        keyword: keyword.value,
-        sort: ['metadata.creationTimestamp,desc'],
-      },
+      params,
     })
     return data
   },
@@ -68,27 +99,82 @@ watch(
   },
 )
 
-const dialog = ref({
+const deleteDialog = ref({
   visible: false,
   record: null as CoverGenerateRecord | null,
   index: -1,
+  isBatch: false,
 })
 
-function handleDeleteItem(record: CoverGenerateRecord, index: number) {
-  dialog.value.visible = true
-  dialog.value.record = record
-  dialog.value.index = index
+const detailDialog = ref({
+  visible: false,
+  record: null as CoverGenerateRecord | null,
+})
+
+interface StatusProperty {
+  label: string
+  state: 'success' | 'warning' | 'error'
+  animate: boolean
 }
 
-function onConfirmDelete() {
-  const name = dialog.value.record?.metadata.name
-  axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`).then(() => {
-    Toast.success('删除成功')
-    updateList(name)
-    onCancelDelete()
-  }).catch((err) => {
+const statusMap: Record<'PROCESSING' | 'SUCCESS' | 'FAILED', StatusProperty> = {
+  PROCESSING: {
+    label: '处理中',
+    state: 'warning',
+    animate: true,
+  },
+  SUCCESS: {
+    label: '成功',
+    state: 'success',
+    animate: false,
+  },
+  FAILED: {
+    label: '失败',
+    state: 'error',
+    animate: false,
+  },
+}
+
+function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusProperty {
+  return statusMap[status]
+}
+
+function handleDeleteItem(record: CoverGenerateRecord, index: number) {
+  deleteDialog.value.visible = true
+  deleteDialog.value.record = record
+  deleteDialog.value.index = index
+  deleteDialog.value.isBatch = false
+}
+
+function handleDetailItem(record: CoverGenerateRecord) {
+  detailDialog.value.visible = true
+  detailDialog.value.record = record
+}
+
+async function onConfirmDelete() {
+  try {
+    if (deleteDialog.value.isBatch) {
+      // 批量删除
+      await Promise.all(
+        selectedRecordNames.value.map(name =>
+          axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`),
+        ),
+      )
+      Toast.success('批量删除成功')
+      selectedRecordNames.value = []
+      await refetch()
+    } else {
+      // 单个删除
+      const name = deleteDialog.value.record?.metadata.name
+      await axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`)
+      Toast.success('删除成功')
+      await updateList(name)
+    }
+  } catch (err) {
     Toast.error(`删除失败: ${String(err)}`)
-  })
+  } finally {
+    onCancelDelete()
+  }
 }
 
 async function updateList(name?: string) {
@@ -103,10 +189,45 @@ async function updateList(name?: string) {
 }
 
 function onCancelDelete() {
-  dialog.value.visible = false
-  dialog.value.record = null
-  dialog.value.index = -1
+  deleteDialog.value.visible = false
+  deleteDialog.value.record = null
+  deleteDialog.value.index = -1
+  deleteDialog.value.isBatch = false
 }
+
+function onCancelDetail() {
+  detailDialog.value.visible = false
+  detailDialog.value.record = null
+}
+
+function checkSelection(record: CoverGenerateRecord) {
+  return selectedRecordNames.value.includes(record.metadata.name)
+}
+
+function handleCheckAllChange(e: Event) {
+  const { checked } = e.target as HTMLInputElement
+
+  if (checked) {
+    selectedRecordNames.value
+      = records.value?.items.map((item) => {
+        return item.metadata.name
+      }) || []
+  } else {
+    selectedRecordNames.value = []
+  }
+}
+
+function handleDeleteInBatch() {
+  if (!selectedRecordNames.value.length) {
+    return
+  }
+  deleteDialog.value.visible = true
+  deleteDialog.value.isBatch = true
+}
+
+watch(selectedRecordNames, (newValue) => {
+  checkedAll.value = newValue.length === records.value?.items.length
+})
 </script>
 
 <template>
@@ -114,22 +235,90 @@ function onCancelDelete() {
     <template #icon>
       <IconWrench />
     </template>
-    <template #actions>
-      <div
-        class="group cursor-pointer rounded p-1 hover:bg-gray-200"
-        @click="refetch()"
-      >
-        <IconRefreshLine
-          v-tooltip="'刷新'"
-          :class="{ 'animate-spin text-gray-900': isFetching }"
-          class="h-4 w-4 text-gray-600 group-hover:text-gray-900"
-        />
-      </div>
-    </template>
   </VPageHeader>
 
   <div class="m-0 md:m-4">
     <VCard :body-class="['!p-0']">
+      <template #header>
+        <div class="block w-full bg-gray-50 px-4 py-3">
+          <div
+            class="relative flex flex-col flex-wrap items-start gap-4 sm:flex-row sm:items-center"
+          >
+            <div class="hidden items-center sm:flex">
+              <input
+                v-model="checkedAll"
+                type="checkbox"
+                @change="handleCheckAllChange"
+              >
+            </div>
+            <div class="flex w-full flex-1 items-center sm:w-auto">
+              <VSpace v-if="selectedRecordNames.length">
+                <VButton type="danger" @click="handleDeleteInBatch">
+                  删除
+                </VButton>
+              </VSpace>
+            </div>
+            <VSpace spacing="lg" class="flex-wrap">
+              <FilterCleanButton
+                v-if="hasFilters"
+                @click="handleClearFilters"
+              />
+              <FilterDropdown
+                v-model="selectedStatus"
+                label="状态"
+                :items="[
+                  {
+                    label: '全部',
+                    value: undefined,
+                  },
+                  {
+                    label: '处理中',
+                    value: 'PROCESSING',
+                  },
+                  {
+                    label: '成功',
+                    value: 'SUCCESS',
+                  },
+                  {
+                    label: '失败',
+                    value: 'FAILED',
+                  },
+                ]"
+              />
+              <FilterDropdown
+                v-model="selectedSort"
+                label="排序"
+                :items="[
+                  {
+                    label: '默认',
+                    value: undefined,
+                  },
+                  {
+                    label: '创建时间倒序',
+                    value: 'metadata.creationTimestamp,desc',
+                  },
+                  {
+                    label: '创建时间正序',
+                    value: 'metadata.creationTimestamp,asc',
+                  },
+                ]"
+              />
+              <div class="flex flex-row gap-2">
+                <div
+                  class="group cursor-pointer rounded p-1 hover:bg-gray-200"
+                  @click="refetch()"
+                >
+                  <IconRefreshLine
+                    v-tooltip="'刷新'"
+                    :class="{ 'animate-spin text-gray-900': isFetching }"
+                    class="h-4 w-4 text-gray-600 group-hover:text-gray-900"
+                  />
+                </div>
+              </div>
+            </VSpace>
+          </div>
+        </div>
+      </template>
       <VLoading v-if="isLoading" />
       <Transition v-else-if="!records?.items.length" appear name="fade">
         <VEmpty
@@ -146,43 +335,16 @@ function onCancelDelete() {
         </VEmpty>
       </Transition>
       <Transition v-else appear name="fade">
-        <div class="overflow-x-auto">
-          <table class="min-w-full table-auto">
-            <thead class="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  T2I 提示词
-                </th>
-                <th class=":uno: hidden px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase md:table-cell dark:text-gray-300">
-                  LLM 提供者
-                </th>
-                <th class=":uno: hidden px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase md:table-cell dark:text-gray-300">
-                  T2I 提供者
-                </th>
-                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  状态
-                </th>
-                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  处理结果
-                </th>
-                <th class="whitespace-nowrap px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  创建时间
-                </th>
-                <th class="px-6 py-3 text-center text-xs text-gray-500 font-medium tracking-wider uppercase dark:text-gray-300">
-                  操作
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              <RecordListItem
-                v-for="(record, index) in records?.items"
-                :key="record.metadata.name"
-                :record="record"
-                @delete="handleDeleteItem(record, index)"
-              />
-            </tbody>
-          </table>
-        </div>
+        <VEntityContainer>
+          <RecordListItem
+            v-for="(record, index) in records?.items"
+            :key="record.metadata.name"
+            :record="record"
+            :is-selected="checkSelection(record)"
+            @delete="handleDeleteItem(record, index)"
+            @detail="handleDetailItem"
+          />
+        </VEntityContainer>
       </Transition>
 
       <template #footer>
@@ -199,13 +361,88 @@ function onCancelDelete() {
     </VCard>
   </div>
   <VDialog
-    :visible="dialog.visible"
-    title="确定删除吗？"
-    description="你确定要删除这条记录吗？"
+    v-model:visible="deleteDialog.visible"
+    :title="deleteDialog.isBatch ? '确定要删除选中的记录吗？' : '确定删除吗？'"
+    :description="deleteDialog.isBatch ? `你确定要删除选中的 ${selectedRecordNames.length} 条记录吗？` : '你确定要删除这条记录吗？'"
     type="warning"
     confirm-type="danger"
-    @close="onCancelDelete"
-    @cancel="onCancelDelete"
-    @confirm="onConfirmDelete"
+    :on-cancel="onCancelDelete"
+    :on-confirm="onConfirmDelete"
   />
+  <VModal
+    v-model:visible="detailDialog.visible"
+    title="记录详情"
+    :width="800"
+    @close="onCancelDetail"
+  >
+    <div v-if="detailDialog.record" class="space-y-4">
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          文章标题:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ detailDialog.record.spec.postTitle }}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          T2I 提示词:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ detailDialog.record.spec.t2iPrompt }}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          LLM 提供者:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ `${detailDialog.record.spec.llmProvider} (${detailDialog.record.spec.llmModelId})` }}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          T2I 提供者:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ `${detailDialog.record.spec.t2iProvider} (${detailDialog.record.spec.t2iModelId})` }}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          状态:
+        </div>
+        <div class="col-span-2">
+          <VStatusDot
+            :state="getRecordStatus(detailDialog.record.spec.status).state"
+            :label="getRecordStatus(detailDialog.record.spec.status).label"
+            :animate="getRecordStatus(detailDialog.record.spec.status).animate"
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          处理结果:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ detailDialog.record.spec.result }}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="text-gray-500 font-medium dark:text-gray-400">
+          创建时间:
+        </div>
+        <div class="col-span-2 text-gray-900 dark:text-gray-100">
+          {{ dayjs(detailDialog.record.metadata.creationTimestamp).format('YYYY-MM-DD HH:mm:ss') }}
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <VSpace>
+        <VButton @click="onCancelDetail">
+          关闭
+        </VButton>
+      </VSpace>
+    </template>
+  </VModal>
 </template>

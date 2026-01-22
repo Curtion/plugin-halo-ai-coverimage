@@ -43,6 +43,9 @@ public class CoverGenerateRecord extends AbstractExtension {
 
         @Schema(description = "任务执行结果, 成功时为图片URL, 失败时为错误信息")
         private String result;
+
+        @Schema(description = "文章标题")
+        private String postTitle;
     }
 
     public enum Status {

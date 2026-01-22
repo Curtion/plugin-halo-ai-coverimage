@@ -12,6 +12,7 @@ export interface Metadata {
 }
 
 export interface CoverGenerateRecordSpec {
+  postTitle: string
   status: 'PROCESSING' | 'SUCCESS' | 'FAILED'
   llmPrompt: string
   t2iPrompt: string

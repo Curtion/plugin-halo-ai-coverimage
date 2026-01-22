@@ -84,6 +84,7 @@ public class HaloEventListener {
                                 spec.setT2iProvider(t2iSetting.engine().getValue());
                                 spec.setT2iModelId(t2iSetting.model());
                                 spec.setLlmPrompt(llmSetting.prompt());
+                                spec.setPostTitle(post.getSpec().getTitle());
 
                                 return this.client.create(record)
                                         .flatMap(createdRecord -> llmProviderManager.getProvider(llmSetting.engine())
