@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:3.5.10")
-    implementation platform('run.halo.tools.platform:plugin:2.22.0')
+    implementation platform('run.halo.tools.platform:plugin:2.22.8')
     compileOnly 'run.halo.app:api'
 
     testImplementation 'run.halo.app:api'

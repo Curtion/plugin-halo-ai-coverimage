@@ -1,5 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.provider.IllmProvider;
@@ -67,15 +68,12 @@ public class SfLlmProvider implements IllmProvider {
                         .map(HttpResponse::body)
                         .flatMap(responseBody -> {
                             try {
-                                Map<String, Object> responseMap =
-                                    objectMapper.readValue(responseBody, Map.class);
-                                List<Map<String, Object>> choices =
-                                    (List<Map<String, Object>>) responseMap.get("choices");
-                                if (choices != null && !choices.isEmpty()) {
-                                    Map<String, Object> firstChoice = choices.get(0);
-                                    Map<String, String> messageMap =
-                                        (Map<String, String>) firstChoice.get("message");
-                                    return Mono.just(messageMap.get("content"));
+                                JsonNode rootNode = objectMapper.readTree(responseBody);
+                                JsonNode choicesNode = rootNode.path("choices");
+                                if (choicesNode.isArray() && !choicesNode.isEmpty()) {
+                                    JsonNode firstChoice = choicesNode.get(0);
+                                    JsonNode messageNode = firstChoice.path("message");
+                                    return Mono.just(messageNode.path("content").asText());
                                 }
                             } catch (Exception e) {
                                 return Mono.error(e);

@@ -5,11 +5,9 @@ import org.springframework.stereotype.Component;
 
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
-import run.halo.app.extension.index.IndexSpec;
+import run.halo.app.extension.index.IndexSpecs;
 import run.halo.app.plugin.BasePlugin;
 import run.halo.app.plugin.PluginContext;
-
-import static run.halo.app.extension.index.IndexAttributeFactory.simpleAttribute;
 
 /**
  * <p>
@@ -39,19 +37,8 @@ public class HaloAiCoverimagePlugin extends BasePlugin {
     @Override
     public void start() {
         schemeManager.register(CoverGenerateRecord.class, indexSpecs -> {
-            indexSpecs.add(new IndexSpec()
-                .setName("spec.status")
-                .setIndexFunc(simpleAttribute(CoverGenerateRecord.class, 
-                    record -> {
-                        var status = record.getSpec().getStatus();
-                        return status != null ? status.name() : null;
-                    }))
-            );
-            indexSpecs.add(new IndexSpec()
-                .setName("spec.postTitle")
-                .setIndexFunc(simpleAttribute(CoverGenerateRecord.class,
-                    record -> record.getSpec().getPostTitle()))
-            );
+            indexSpecs.add(IndexSpecs.multi("spec.status", String.class));
+            indexSpecs.add(IndexSpecs.multi("spec.postTitle", String.class));
         });
         System.out.println("HaloAiCoverimagePlugin 插件启动了!");
     }

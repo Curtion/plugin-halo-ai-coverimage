@@ -1,5 +1,6 @@
 package io.github.curtion.haloaicoverimage.provider.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.curtion.haloaicoverimage.model.enums.ProviderEngine;
 import io.github.curtion.haloaicoverimage.provider.It2iProvider;
@@ -10,7 +11,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -56,12 +56,10 @@ public class SfT2iProvider implements It2iProvider {
                     .map(HttpResponse::body)
                     .flatMap(responseBody -> {
                         try {
-                            Map<String, Object> responseMap =
-                                    objectMapper.readValue(responseBody, Map.class);
-                            List<Map<String, Object>> images =
-                                    (List<Map<String, Object>>) responseMap.get("images");
-                            if (images != null && !images.isEmpty()) {
-                                String imageUrl = (String) images.get(0).get("url");
+                            JsonNode rootNode = objectMapper.readTree(responseBody);
+                            JsonNode imagesNode = rootNode.path("images");
+                            if (imagesNode.isArray() && !imagesNode.isEmpty()) {
+                                String imageUrl = imagesNode.get(0).path("url").asText();
                                 return urlAttachmentUploader.uploadFromUrl(
                                         imageUrl, basicSetting.group(), basicSetting.quality());
                             }
