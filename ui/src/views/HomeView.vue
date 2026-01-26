@@ -87,6 +87,13 @@ const {
     })
     return data
   },
+  refetchInterval: (query) => {
+    const data = query.state.data as CoverGenerateRecordList | undefined
+    if (data?.items.some(item => item.metadata.deletionTimestamp)) {
+      return 1000
+    }
+    return false
+  },
 })
 
 watch(
@@ -153,38 +160,31 @@ function handleDetailItem(record: CoverGenerateRecord) {
 
 async function onConfirmDelete() {
   try {
-    if (deleteDialog.value.isBatch) {
-      // 批量删除
+    const itemsToDelete = deleteDialog.value.isBatch
+      ? selectedRecordNames.value
+      : [deleteDialog.value.record?.metadata.name].filter(Boolean) as string[]
+
+    const chunks: string[][] = []
+    for (let i = 0; i < itemsToDelete.length; i += 5) {
+      chunks.push(itemsToDelete.slice(i, i + 5))
+    }
+
+    for (const chunk of chunks) {
       await Promise.all(
-        selectedRecordNames.value.map(name =>
+        chunk.map(name =>
           axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`),
         ),
       )
-      Toast.success('批量删除成功')
-      selectedRecordNames.value = []
-      await refetch()
-    } else {
-      // 单个删除
-      const name = deleteDialog.value.record?.metadata.name
-      await axios.delete(`/apis/io.github.curtion/v1alpha1/covergeneraterecords/${name}`)
-      Toast.success('删除成功')
-      await updateList(name)
     }
+
+    selectedRecordNames.value = []
+    await refetch()
+
+    Toast.success('删除成功')
   } catch (err) {
     Toast.error(`删除失败: ${String(err)}`)
   } finally {
     onCancelDelete()
-  }
-}
-
-async function updateList(name?: string) {
-  if (!name) {
-    return
-  }
-  await refetch()
-  if (records.value?.items.find(item => item.metadata.name === name)) {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    await refetch()
   }
 }
 
