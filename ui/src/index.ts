@@ -1,4 +1,4 @@
-import { definePlugin } from '@halo-dev/console-shared'
+import { definePlugin } from '@halo-dev/ui-shared'
 import { markRaw } from 'vue'
 import IconWrench from '~icons/iconoir/wrench'
 import HomeView from './views/HomeView.vue'

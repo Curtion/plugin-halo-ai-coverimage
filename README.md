@@ -21,16 +21,21 @@ Halo AI封面图插件
 ## 开发
 
 ```bash
-# 构建插件
-./gradlew build
 
-# 开发前端
+# 前端开发
 cd ui
 pnpm install
 pnpm dev
 
+# 前端依赖升级
+
+npx taze major -w
+
 # 启动Halo
 ./gradlew haloServer
+
+# 重新加载
+./gradlew reload
 ```
 
 ## 构建
