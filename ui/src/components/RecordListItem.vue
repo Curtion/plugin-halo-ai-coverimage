@@ -88,7 +88,7 @@ function getRecordStatus(status: 'PROCESSING' | 'SUCCESS' | 'FAILED'): StatusPro
         <template #description>
           <VDropdown>
             <div
-              class="flex h-full cursor-pointer items-center px-4 transition-all hover:text-blue-600"
+              class="h-full flex cursor-pointer items-center px-4 transition-all hover:text-blue-600"
             >
               <IconMore class="h-4 w-4" />
             </div>

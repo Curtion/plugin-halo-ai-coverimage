@@ -5,9 +5,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "build-only": "vite build",
     "dev": "vite build --watch --mode=development",
-    "lint:oxlint": "oxlint . --fix -D correctness --ignore-path ../.gitignore",
-    "lint:eslint": "eslint . --fix",
-    "lint": "run-s lint:*",
+    "lint": "eslint . --fix",
     "test:unit": "vitest --passWithNoTests",
     "type-check": "vue-tsc --build"
   },
@@ -34,7 +32,6 @@
     "eslint": "^9.39.2",
     "jsdom": "^27.4.0",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.42.0",
     "sass": "^1.97.3",
     "typescript": "~5.9.3",
     "unocss": "^66.6.0",

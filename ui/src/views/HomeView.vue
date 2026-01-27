@@ -251,7 +251,7 @@ watch(selectedRecordNames, (newValue) => {
                 @change="handleCheckAllChange"
               >
             </div>
-            <div class="flex w-full flex-1 items-center sm:w-auto">
+            <div class="w-full flex flex-1 items-center sm:w-auto">
               <VSpace v-if="selectedRecordNames.length">
                 <VButton type="danger" @click="handleDeleteInBatch">
                   删除
