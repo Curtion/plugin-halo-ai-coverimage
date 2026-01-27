@@ -2,7 +2,7 @@
 import type { Ref } from 'vue'
 import type { CoverGenerateRecord } from '../types'
 
-import { IconMore, VButton, VDropdown, VDropdownDivider, VDropdownItem, VEntity, VEntityField, VSpace, VStatusDot } from '@halo-dev/components'
+import { IconMore, VDropdown, VDropdownDivider, VDropdownItem, VEntity, VEntityField, VSpace, VStatusDot } from '@halo-dev/components'
 import dayjs from 'dayjs'
 import { computed, inject, ref } from 'vue'
 
