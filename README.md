@@ -28,7 +28,6 @@ pnpm install
 pnpm dev
 
 # 前端依赖升级
-
 npx taze major -w
 
 # 启动Halo
@@ -38,13 +37,19 @@ npx taze major -w
 ./gradlew reload
 ```
 
-## 构建
+## 本地构建
 
 ```bash
 ./gradlew build
 ```
 
 构建完成后，可以在 `build/libs` 目录找到插件 jar 文件。
+
+## 发布
+
+1. git tag新建标签
+2. github release 发布一个新版本
+3. 等待github action
 
 ## 许可证
 
